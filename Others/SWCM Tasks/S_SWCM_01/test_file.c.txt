@@ -1,0 +1,13 @@
+line 1
+line 2 
+line 3
+line 4 as added by another developer
+new line 1 for feature1
+new line 2 for feature1
+
+===== EOD ======
+
+add line1 in feature1 after first push
+
+====== FINAL EOD =====
+
