@@ -12,9 +12,9 @@
 
 /* INCLUDES */
 
-#include "../../Microcontroller/Std_Types.h"
-#include "../../Microcontroller/Common_Macros.h"
-#include "../../MCAL/I2C Driver/I2C.h"
+#include "Std_Types.h"
+#include "Common_Macros.h"
+#include "I2C.h"
 #include "EEPROM_24_Cfg.h"
 
 

@@ -9,9 +9,16 @@
 #ifndef EEPROM_24_CFG_H_
 #define EEPROM_24_CFG_H_
 
+#define AT24C256B    1
+#define AT24C16B	 2
+
+#define MODEL	AT24C16B
+
+#if MODEL == AT24C16B
 #define SLAVE_ADDRESS_EEPROM		0x0A
-
-
+#elif MODEL == AT24C256B
+#define SLAVE_ADDRESS_EEPROM		0xA0
+#endif
 
 
 #endif /* EEPROM_24_CFG_H_ */
