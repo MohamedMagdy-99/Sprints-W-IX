@@ -52,14 +52,14 @@ uint8_t gu8_pressedKey = NO_KEY_PRESSED; //keypad input
 uint8_t u8_temperature = Initial_Value;  //ATM temperature
 uint8_t u8_temperatureString[3];         //ATM temperature string to be displayed
 
-uint8_t* gau8_userAmountIntegerPart[5];	//store integer part of input amount as a string
-uint8_t* gau8_userAmountDecimalPart[3];	//store decimal part of input amount as a string
+uint8_t gau8_userAmountIntegerPart[5];	//store integer part of input amount as a string
+uint8_t gau8_userAmountDecimalPart[3];	//store decimal part of input amount as a string
 
-uint8_t* gau8_maxBalanceIntegerPart[5];	//store integer part of max amount as a string
-uint8_t* gau8_maxBalanceDecimalPart[3];	//store decimal part of max amount as a string
+uint8_t gau8_maxBalanceIntegerPart[5];	//store integer part of max amount as a string
+uint8_t gau8_maxBalanceDecimalPart[3];	//store decimal part of max amount as a string
 
-uint8_t* gau8_BalanceIntegerPart[5];	//store integer part of  balance as a string
-uint8_t* gau8_BalanceDecimalPart[3];	//store decimal part of  balance as a string
+uint8_t gau8_BalanceIntegerPart[5];	//store integer part of  balance as a string
+uint8_t gau8_BalanceDecimalPart[3];	//store decimal part of  balance as a string
 
 uint32_t gu32_userInputAmount_IntValue;	//store integer part of user input amount as a integer
 uint32_t gu32_userInputAmount_DecValue;	//store decimal part of user input amount as a integer
@@ -71,6 +71,14 @@ uint32_t gu32_userBalanceAmount_IntValue;	//store integer part of user balance a
 uint32_t gu32_userBalanceAmount_DecValue;	//store decimal part of user balance as a integer
 
 volatile uint8_t gu8_insertButtonPressedFlag = InsertCardButtonNotPresssed; //flag to indicate if insert button was pressed or not
+
+/* updating balance after transaction */
+float32_t gf32_floatBalance = Initial_Value;
+float32_t gf32_floatAmount = Initial_Value;
+float32_t gf32_floatNewBalance = Initial_Value;
+uint8_t gau8_newBalance[Balance_size];
+uint8_t gu8_currentUserId = Initial_Value;
+
 /*- LOCAL FUNCTIONS IMPLEMENTATION
 ------------------------*/
 
@@ -137,7 +145,7 @@ enuAtm_Status_t Atm_Update(void)
 	/*********************************** PROGRAMMING MODE *********************************************/
 	/**************************************************************************************************/
 	
-	if(enuAtmMode == ATM_PROGRAMMING_MODE)
+	if(enuAtmMode == ATM_PROGRAMMING_MODE || enuAtmMode == ATM_IDLE_MODE)
 	{
 		Uart_syncTransmit_string("\rYou are now in ADMIN mode\r");
 		
@@ -254,6 +262,8 @@ enuAtm_Status_t Atm_Update(void)
 								/* check if enough balance */
 								if(compareUserAmountWithBalance() == TRUE)
 								{
+									/* update balance */
+								    updateBalanceAfterTransaction();
 									/* transaction approved */
 									transactionApproved();
 									return ATM_STATUS_ERROR_OK;
@@ -283,7 +293,6 @@ enuAtm_Status_t Atm_Update(void)
 					{
 						/* Invalid pin message */
 						incorrectPIN_message();
-						
 						return ATM_STATUS_ERROR_OK;
 					}
 									
@@ -324,6 +333,16 @@ enuAtm_Status_t Atm_Update(void)
 /**************************************************************************************************/
 /*********************************** USED FUNCTIOS ************************************************/
 /**************************************************************************************************/
+
+enuAtm_Status_t updateBalanceAfterTransaction(void)
+{
+	gf32_floatBalance = stringToFloat(gau8_Balance);
+	gf32_floatAmount = stringToFloat(gau8_Amount_AtmUser);
+	gf32_floatNewBalance = gf32_floatBalance - gf32_floatAmount;
+	floatToString(gf32_floatNewBalance, gau8_newBalance);	
+	return ATM_STATUS_ERROR_OK;
+}
+
 
 enuAtm_Status_t incorrectPIN_message(void)
 {
@@ -501,9 +520,13 @@ enuAtm_Status_t transactionApproved(void)
 {
 	Lcd_sendCommand(CLEAR);
 	Lcd_cursorPosition(1,1);
-	Lcd_sendString("   Transaction");
+	Lcd_sendString(" Trans. Approved");
 	Lcd_cursorPosition(2,1);
-	Lcd_sendString("    Approved");
+	Lcd_sendString(" New Bal:");
+	Lcd_sendString(gau8_newBalance);
+	/* save new balance */
+	saveUserNewBalance(gu8_currentUserId);
+	
 	Uart_syncTransmit_string("\rYour transaction is approved!\rThank you for banking with us\r");
 	/* rotate motor for 1 sec */
 	Motor_moveForward(MOTOR_ATM_ID, MotorSpeed);
@@ -525,6 +548,7 @@ uint8_t checkIfPAN_ExistsInServer(void)
 		/* check if PAN correct */
 		if(stringCmp(gau8_PAN, gau8_PAN_CardECU) == TRUE)
 		{
+			gu8_currentUserId = u8_loopCounter;
 			return TRUE;
 		}
 	}
@@ -572,6 +596,15 @@ enuAtm_Status_t getUserDataFromEeprom(uint8_t u8_userId)
 	/* get balance from eeprom */
 	Eeprom_24_readPacket((FirstCustomerBalanceAdress+((u8_userId-1)*CustomerAddressDataOffset)),
 	gau8_Balance, Balance_size);
+	
+	return ATM_STATUS_ERROR_OK;
+}
+
+enuAtm_Status_t saveUserNewBalance(uint8_t u8_userId)
+{
+	/* save user new balance in eeprom */
+	Eeprom_24_writePacket((FirstCustomerBalanceAdress+((u8_userId-1)*CustomerAddressDataOffset)),
+	gau8_newBalance, Balance_size);
 	
 	return ATM_STATUS_ERROR_OK;
 }
@@ -1112,7 +1145,7 @@ enuAtm_Status_t getMode_userModeVersion(void)
 void FunctionWhenCardInsertedPressed(void)
 {
 	/* check if the ATM in the correct state to request data from CARD */
-	if(gu8_CustomerDataFlag == CustomerDataAvailable && enuAtmMode != ATM_IDLE_MODE)
+	if(gu8_CustomerDataFlag == CustomerDataAvailable && enuAtmMode == ATM_USER_MODE)
 	{
 		/* signal card ECU to start sending data and receive it in spi slave mode */
 		Dio_writePin(CardRequestSignal_Pin, STD_LOW);
@@ -1126,7 +1159,7 @@ void FunctionWhenCardInsertedPressed(void)
 	}
 	else
 	{
-		Uart_syncTransmit_string("No customer data available yet on our server or\ryou are not in USER mode\r\r");
+		Uart_syncTransmit_string("\rNo customer data available yet on our server or\ryou are not in USER mode\r\r");
 	}
 
 }

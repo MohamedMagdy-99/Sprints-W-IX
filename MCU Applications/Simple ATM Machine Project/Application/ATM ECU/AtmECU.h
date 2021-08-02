@@ -144,7 +144,8 @@ enuAtm_Status_t saveNewUserDataInEeprom(void);
 enuAtm_Status_t enterPIN_Lcd(void);
 enuAtm_Status_t enterAmount_Lcd(void);
 enuAtm_Status_t incorrectPIN_message(void);
-
+enuAtm_Status_t saveUserNewBalance(uint8_t u8_userId);
+enuAtm_Status_t updateBalanceAfterTransaction(void);
 uint8_t compareUserAmountWithMaxAmount(void);
 
 void FunctionWhenCardInsertedPressed(void);
