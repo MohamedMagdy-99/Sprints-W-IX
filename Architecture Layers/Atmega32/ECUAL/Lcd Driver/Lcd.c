@@ -30,9 +30,13 @@ enuLcd_Status_t Lcd_sendData_4bitMode(uint8_t u8_data)
 {
 	Lcd_sendHigherNibble(u8_data);							//send higher nibble
 	Lcd_toggleEnable();		//toggle enable
-
+	
+	Delay_ms(1);
+	
 	Lcd_sendLowerNibble(u8_data);							//send lower nibble
 	Lcd_toggleEnable();		//toggle enable
+	
+	Delay_ms(2);
 	
 	return LCD_STATUS_ERROR_OK;
 }
@@ -89,6 +93,7 @@ enuLcd_Status_t Lcd_init(void)
 	
 	Dio_init();
 	
+	Delay_ms(20);
 	//Activate 4 bit mode
 	Lcd_sendCommand(0x33);
 	Lcd_sendCommand(0x32);
