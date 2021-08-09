@@ -12,7 +12,7 @@
 /* INCLUDES */
 
 #include "../../Microcontroller/Std_Types.h"
-#include "../../Microcontroller/Common_Macros.h"
+#include "../../Microcontroller/Utility Module/Common_Macros.h"
 #include "../../MCAL/Dio Driver/Dio.h"
 #include "Lcd_Cfg.h"
 #include "../../Microcontroller/Delay Module/Delay.h"
@@ -52,5 +52,5 @@ enuLcd_Status_t Lcd_init(void);
 enuLcd_Status_t Lcd_sendHigherNibble(uint8_t u8_data);
 enuLcd_Status_t Lcd_sendLowerNibble(uint8_t u8_data);
 
-enuLcd_Status_t Lcd_sendVariableInt(uint16_t u16_number, uint8_t *pu8_String, uint8_t u8_base);
+enuLcd_Status_t Lcd_sendVariableInt(uint16_t u16_number, uint8_t u8_base); 
 #endif /* LCD_H_ */

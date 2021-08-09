@@ -37,7 +37,6 @@ enuLcd_Status_t Lcd_sendData_4bitMode(uint8_t u8_data)
 	Lcd_toggleEnable();		//toggle enable
 	
 	Delay_ms(2);
-	
 	return LCD_STATUS_ERROR_OK;
 }
 
@@ -117,8 +116,9 @@ enuLcd_Status_t Lcd_init(void)
 }
 
 
-enuLcd_Status_t Lcd_sendVariableInt(uint16_t u16_number, uint8_t *pu8_String, uint8_t u8_base) 
+enuLcd_Status_t Lcd_sendVariableInt(uint16_t u16_number, uint8_t u8_base) 
 {	
+	uint8_t pu8_String[6];
 
 	integerToString(u16_number, pu8_String, u8_base);
 
@@ -130,7 +130,6 @@ enuLcd_Status_t Lcd_sendVariableInt(uint16_t u16_number, uint8_t *pu8_String, ui
 
 enuLcd_Status_t Lcd_sendLowerNibble(uint8_t u8_data)
 {
-	//Uart_syncTransmit_oneFrame(u8_data);
 	if((u8_data & 0x01) != 0)
 	{
 		Dio_writePin(D4_DIO_ID, STD_HIGH);
