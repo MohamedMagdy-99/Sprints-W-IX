@@ -10,6 +10,10 @@
 #ifndef SW_PWM_CFG_H_
 #define SW_PWM_CFG_H_
 
+/* CONSTANTS */
+
+#define F_CPU 1000000UL
+
 #define USED_PWM_CHANNELS 1
 
 #define PWM_CHANNEL_1_ID			0
