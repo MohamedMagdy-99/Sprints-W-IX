@@ -14,8 +14,6 @@
 #include "../../MCAL/Dio Driver/Dio.h"
 #include "../../MCAL/Gpt Driver/Gpt.h"
 #include "SWPwm_Cfg.h"
-/*- CONSTANTS ----------------------------------------------*/
-#define F_CPU 1000000UL
 
 /*- ENUMS --------------------------------------------------*/
 typedef enum
