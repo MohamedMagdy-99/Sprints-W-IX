@@ -7,9 +7,16 @@
 ******************************************************************************/
 #include "ISR.h"
 
+/* CONSTANTS */
+
+#define LOW_LEVEL			0			//The low level of INT0 generates an interrupt request.
+#define LOGIC_CHANGE		1			//Any logical change on INT0 generates an interrupt request.
+#define FALLING_EDGE		2			//The falling edge of INT0 generates an interrupt request.
+#define RISING_EDGE			3			//The rising edge of INT0 generates an interrupt request.
+/*************************************************************************************/
+
 /*- GLOBAL STATIC VARIABLES
 -------------------------------*/
-static volatile uint32_t gu32_OvfCounts = Initial_Value;
 
 static pfINT0_CallBack_t ExtInt0Callback;
 
