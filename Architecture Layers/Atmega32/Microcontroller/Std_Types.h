@@ -1,47 +1,38 @@
-/******************************************************************************
+ /******************************************************************************
  *
- * Module: Standard - Types
+ * Module: Common - Platform
  *
  * File Name: Std_Types.h
  *
- * Description: Commonly used standard data types
+ * Description: General type definitions
  *
  * Author: Mohamed Magdy
  *
- * Date: 14-July-2021
  *******************************************************************************/
 
-#ifndef STD_TYPES_H_INCLUDED
-#define STD_TYPES_H_INCLUDED
+#ifndef STD_TYPES_H
+#define STD_TYPES_H
 
+#include "Platform_Types.h"
 
 /*
- * Boolean Values
+ *  Describes the standard Return Type Definitions used in the project
  */
-#ifndef FALSE
-#define FALSE       (0u)
-#endif
-#ifndef TRUE
-#define TRUE        (1u)
-#endif
+typedef uint8  Std_ReturnType;
 
-typedef unsigned char         boolean;
 
-typedef unsigned char         uint8_t;          /*           0 .. 255             */
-typedef signed char           sint8_t;          /*        -128 .. +127            */
-typedef unsigned short        uint16_t;         /*           0 .. 65535           */
-typedef signed short          sint16_t;         /*      -32768 .. +32767          */
-typedef unsigned long         uint32_t;         /*           0 .. 4294967295      */
-typedef signed long           sint32_t;         /* -2147483648 .. +2147483647     */
-typedef unsigned long long    uint64_t;         /*       0..18446744073709551615  */
-typedef signed long long      sint64_t;
-typedef float                 float32_t;
-typedef double				  float64_t;
-
-#define Initial_Value	0x00U
-#define Null_Ptr	(void* 0)
 
 #define STD_HIGH        0x01U       /* Standard HIGH */
 #define STD_LOW         0x00U       /* Standard LOW */
 
-#endif // STD_TYPES_H_INCLUDED
+#define STD_ACTIVE      0x01U       /* Logical state active */
+#define STD_IDLE        0x00U       /* Logical state idle */
+
+#define STD_ON          0x01U       /* Standard ON */
+#define STD_OFF         0x00U       /* Standard OFF */
+
+#define E_OK            ((Std_ReturnType)0x00U)      /* Function Return OK */
+#define E_NOT_OK        ((Std_ReturnType)0x01U)      /* Function Return NOT OK */
+
+#define Initial_Value	0x00U
+#endif /* STD_TYPES_H */
