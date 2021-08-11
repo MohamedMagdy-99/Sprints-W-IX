@@ -190,3 +190,70 @@ void separateDecimal(uint8_t* pau8_floatString, uint8_t* pau8_decimalString, uin
 	}
 	pau8_decimalString[u8_decimalLength] = END_OF_STRING;
 }
+
+uint8_t stringLength(uint8_t* string1)
+{
+	uint8_t u8_loopIndex=0;
+	while(string1[u8_loopIndex] != '\0')
+	{
+		u8_loopIndex++;
+	}
+	return u8_loopIndex+1;
+}
+
+float32_t stringToFloat(uint8_t* string)
+{
+	uint8_t strLen = stringLength(string)-1;
+	uint8_t u8_loopIndex=0;
+	float32_t f32_digit = 1;
+	float32_t f32_num = 0;
+	for(u8_loopIndex=0 ;u8_loopIndex<strLen; u8_loopIndex++)
+	{
+		if(string[u8_loopIndex] == '.')
+		{
+			u8_loopIndex++;
+			break;
+		}
+		f32_num += string[u8_loopIndex] - '0';
+		f32_num *= 10;
+	}
+	f32_num /= 10;
+	f32_digit = 1;
+	for(;u8_loopIndex<strLen; u8_loopIndex++)
+	{
+		f32_digit/=10;
+		f32_num += (string[u8_loopIndex] - '0')*f32_digit;
+	}
+	return f32_num;
+}
+
+
+void floatToString(float32_t f32_num, uint8_t* string)
+{
+	uint32_t u32_num = (uint32_t)f32_num;
+	uint8_t u8_digitCount=0;
+	uint8_t u8_indexDot=0;
+	uint32_t temp = 0;
+	while(u32_num !=0)
+	{
+		u32_num/=10;
+		u8_digitCount++;
+	}
+	u32_num = (uint32_t)f32_num;
+	u8_indexDot = u8_digitCount--;
+	while (u32_num)
+	{
+		temp = (u32_num % 10)+ '0';
+		string[u8_digitCount--] = temp;
+		u32_num /= 10;
+	}
+	u32_num = (uint32_t)f32_num;
+	f32_num -= u32_num;
+	u32_num = f32_num*10;
+	string[u8_indexDot++] = '.';
+	string[u8_indexDot++] = u32_num + '0';
+	f32_num *=10;
+	f32_num -= u32_num;
+	u32_num = f32_num*10;
+	string[u8_indexDot] = u32_num + '0';
+}

@@ -26,4 +26,9 @@ uint32_t nPowerM(uint32_t n, uint32_t m);
 uint8_t stringCmp(uint8_t * str1, uint8_t * str2);
 void separateInteger(uint8_t* pau8_floatString, uint8_t* pau8_integerString, uint16_t u16_lengthToStop);
 void separateDecimal(uint8_t* pau8_floatString, uint8_t* pau8_decimalString, uint16_t u16_lengthToStart,  uint16_t u16_floatArraySize);
+
+uint8_t stringLength(uint8_t* string1);
+float32_t stringToFloat(uint8_t* string);
+void floatToString(float32_t f32_num, uint8_t* string);
+
 #endif /* UTILITY_H_ */
