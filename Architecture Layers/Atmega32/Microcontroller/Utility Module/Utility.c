@@ -191,10 +191,10 @@ void separateDecimal(uint8_t* pau8_floatString, uint8_t* pau8_decimalString, uin
 	pau8_decimalString[u8_decimalLength] = END_OF_STRING;
 }
 
-uint8_t stringLength(uint8_t* string1)
+uint8_t stringLength(uint8_t* string)
 {
 	uint8_t u8_loopIndex=0;
-	while(string1[u8_loopIndex] != '\0')
+	while(string[u8_loopIndex] != '\0')
 	{
 		u8_loopIndex++;
 	}
@@ -256,4 +256,92 @@ void floatToString(float32_t f32_num, uint8_t* string)
 	f32_num -= u32_num;
 	u32_num = f32_num*10;
 	string[u8_indexDot] = u32_num + '0';
+}
+
+
+
+void stringConcatenate(uint8_t* destination, uint8_t* source)
+{
+	uint8_t index = 0;
+	uint8_t sourceLength = stringLength(source);
+	uint8_t destinationLength = stringLength(destination)-1;
+	for(index=0;index<=(sourceLength-1);index++)
+		destination[destinationLength+index] = source[index];
+}
+
+
+uint8_t Max_String_Num(uint8_t* string1, uint8_t* string2)
+{
+    uint8_t u8_retValue = stringCompare(string1,string2);
+
+    switch(u8_retValue)
+    {
+    case 1:
+        /* Two Numbers are equal */
+        return 0;
+    case 2:
+        /* string 1 > string 2 */
+        return 1;
+    case 3:
+        /* string 2 > string 1 */
+        return 2;
+    case 0:
+        break;
+    default:
+        break;
+    }
+    uint8_t u8_loopIndex = 0;
+
+    while(string1[u8_loopIndex] != '\0')
+    {
+        if(string1[u8_loopIndex] > string2[u8_loopIndex])
+            return 1;
+        else if(string1[u8_loopIndex] < string2[u8_loopIndex])
+            return 2;
+        u8_loopIndex++;
+    }
+    return 3;
+}
+
+
+void EmptyString(uint8_t *string)
+{
+	uint8_t u8_loopIndex=0;
+	while(string[u8_loopIndex] != '\0')
+		string[u8_loopIndex++] = '\0';
+}
+
+void stringCopy(uint8_t* source, uint8_t* destination)
+{
+    uint8_t u8_loopIndex=0;
+    while(source[u8_loopIndex] != '\0')
+    {
+	    destination[u8_loopIndex] = source[u8_loopIndex];
+	    u8_loopIndex++;
+    }
+}
+void stringHexToNum(uint8_t *pu8_String, uint16_t *pu16_Num)
+{
+	sint8_t s8_loopIndex=0;
+	uint8_t u8_powerValue=0;
+	uint8_t temp_val=0;
+	uint8_t u8_stringLength = stringLength(pu8_String)-1;
+	*pu16_Num = 0;
+	for(s8_loopIndex=u8_stringLength-1 ; s8_loopIndex>=0 ; s8_loopIndex--)
+	{
+		if ((pu8_String[s8_loopIndex]>='0') && (pu8_String[s8_loopIndex]<='9'))
+		{
+			temp_val = pu8_String[s8_loopIndex] - '0';
+			*pu16_Num += temp_val*power(16,u8_powerValue++);
+		}else if((pu8_String[s8_loopIndex]>='A') && (pu8_String[s8_loopIndex]<='F'))
+		{
+			temp_val = pu8_String[s8_loopIndex] - 55;
+			*pu16_Num += temp_val*power(16,u8_powerValue++);
+		}else if((pu8_String[s8_loopIndex]>='a') && (pu8_String[s8_loopIndex]<='f'))
+		{
+			temp_val = pu8_String[s8_loopIndex] - 87;
+			*pu16_Num += temp_val*power(16,u8_powerValue++);
+		}
+
+	}
 }
