@@ -8,7 +8,6 @@
  *
  * Author: Mohamed Magdy
  *
- * Date: 14-July-2021
  *******************************************************************************/
 
 #ifndef COMMON_MACROS
@@ -23,6 +22,12 @@
 /* Toggle a certain bit in any register */
 #define TOGGLE_BIT(REG,BIT) (REG^=(1<<BIT))
 
+/* Set a certain Port register */
+#define SET_PORT(REG) (REG = 0xFF)
+
+/* Set a certain Port register */
+#define CLEAR_PORT(REG) (REG = 0x00)
+
 /* Rotate right the register value with specific number of rotates */
 #define ROR(REG,num) ( REG= (REG>>num) | (REG<<(8-num)) )
 
@@ -34,5 +39,6 @@
 
 /* Check if a specific bit is cleared in any register and return true if yes */
 #define BIT_IS_CLEAR(REG,BIT) ( !(REG & (1<<BIT)) )
+
 
 #endif
