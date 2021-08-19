@@ -7,19 +7,13 @@
 ******************************************************************************/
 #include "ISR.h"
 
-/* CONSTANTS */
 
-#define LOW_LEVEL			0			//The low level of INT0 generates an interrupt request.
-#define LOGIC_CHANGE		1			//Any logical change on INT0 generates an interrupt request.
-#define FALLING_EDGE		2			//The falling edge of INT0 generates an interrupt request.
-#define RISING_EDGE			3			//The rising edge of INT0 generates an interrupt request.
-/*************************************************************************************/
 
 /*- GLOBAL STATIC VARIABLES
 -------------------------------*/
 
 static pfINT0_CallBack_t ExtInt0Callback;
-
+static pfINT2_CallBack_t ExtInt2Callback;
 
 /*- Function Definitions
 -------------------------------*/
@@ -35,7 +29,7 @@ void DisableGlobalInterrupts(void)
 
 void EnableExternalInterrupts_INT0(uint8_t senseControl)
 {
-	SET_BIT(GICR_R, INT0_B);
+	
 	switch(senseControl)
 	{
 		case(LOW_LEVEL):
@@ -61,8 +55,10 @@ void EnableExternalInterrupts_INT0(uint8_t senseControl)
 			SET_BIT(MCUCR_R, ISC00_B);
 			SET_BIT(MCUCR_R, ISC00_B);
 			break;
-		}					
+		}
+		default: break;	
 	}
+	SET_BIT(GICR_R, INT0_B);
 	EnableGlobalInterrupts();
 }
 
@@ -72,6 +68,33 @@ void DisableExternalInterrupts_INT0()
 }
 
 
+
+void EnableExternalInterrupts_INT2(uint8_t senseControl)
+{
+	
+	switch(senseControl)
+	{
+		case(FALLING_EDGE):
+		{
+			CLEAR_BIT(MCUCSR_R, ISC2_B);
+			break;
+		}
+		case(RISING_EDGE):
+		{
+			SET_BIT(MCUCSR_R, ISC2_B);
+			break;
+		}
+		default: break;
+					
+	}
+	SET_BIT(GICR_R, INT2_B);
+	EnableGlobalInterrupts();
+}
+
+void DisableExternalInterrupts_INT2()
+{
+	CLEAR_BIT(GICR_R, INT2_B);
+}
 /*****************************************************************************************
 * Parameters (in): pointer to function to be called from ISR
 * Parameters (out): None
@@ -94,4 +117,28 @@ ISR(INT0)
 {
 	
 	ExtInt0Callback();
+}
+
+/*****************************************************************************************
+* Parameters (in): pointer to function to be called from ISR
+* Parameters (out): None
+* Return value: None
+* Description: sets the function to be called by external interrupt 2 ISR
+******************************************************************************************/
+void setExtINT2Callback(pfINT2_CallBack_t FunToBeCalledInISR)
+{
+	ExtInt2Callback = FunToBeCalledInISR;
+	
+}
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out):None
+* Return value: None
+* Description: interrupt service routine for external interrupt 2 ISR
+******************************************************************************************/
+ISR(INT2)
+{
+	
+	ExtInt2Callback();
 }

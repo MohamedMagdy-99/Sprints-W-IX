@@ -10,13 +10,13 @@
 #ifndef ISR_H_
 #define ISR_H_
 
-#include "ISR_Regs.h"
+#include "../../Microcontroller/Atmega32 Registers/ISR_Regs.h"
 #include "../../Microcontroller/Std_Types.h"
-#include "../../Microcontroller/Common_Macros.h"
+#include "../../Libraries/Common_Macros.h"
 
 /*- PRIMITIVE TYPES ----------------------------------------*/
 typedef void (*pfINT0_CallBack_t)(void);
-
+typedef void (*pfINT2_CallBack_t)(void);
 
 /*- Vector Table
 -------------------------------*/
@@ -45,6 +45,18 @@ typedef void (*pfINT0_CallBack_t)(void);
 void vector (void) __attribute__ ((signal,used)) __VA_ARGS__; \
 void vector (void)
 
+
+/* CONSTANTS */
+
+#define LOW_LEVEL			0			//The low level of INT0 generates an interrupt request.
+#define LOGIC_CHANGE		1			//Any logical change on INT0 generates an interrupt request.
+#define FALLING_EDGE		2			//The falling edge of INT0 generates an interrupt request.
+#define RISING_EDGE			3			//The rising edge of INT0 generates an interrupt request.
+/*************************************************************************************/
+
+#define EXT_INT0			0U
+#define EXT_INT1			1U
+#define EXT_INT2			2U
 /*************************************************************************************/
 /*- Function Declarations
 -------------------------------*/
@@ -53,9 +65,10 @@ void DisableGlobalInterrupts(void);
 
 void DisableExternalInterrupts_INT0();
 void EnableExternalInterrupts_INT0(uint8_t senseControl);
-
-
-
 void setExtINT0Callback(pfINT0_CallBack_t FunToBeCalledInISR);
+
+void DisableExternalInterrupts_INT2();
+void EnableExternalInterrupts_INT2(uint8_t senseControl);
+void setExtINT2Callback(pfINT2_CallBack_t FunToBeCalledInISR);
 
 #endif /* ISR_H_ */
