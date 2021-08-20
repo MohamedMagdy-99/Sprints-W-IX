@@ -18,7 +18,7 @@
 /*
  *  Describes the standard Return Type Definitions used in the project
  */
-typedef uint8  Std_ReturnType;
+typedef uint8_t  Std_ReturnType;
 
 
 

@@ -15,10 +15,8 @@
 strButton_Config_t strButton_Config[BUTTONS_USED]=
 {
 	/*Button Pin */ 
-	{  BUTTON_G_DIO_ID },
-	{  BUTTON_M_DIO_ID },
-	{  BUTTON_R_DIO_ID },
-	{  BUTTON_L_DIO_ID }
+	{  BUTTON_EXT_DIO_ID }
+
 	
 };
 /*- APIs IMPLEMENTATION
