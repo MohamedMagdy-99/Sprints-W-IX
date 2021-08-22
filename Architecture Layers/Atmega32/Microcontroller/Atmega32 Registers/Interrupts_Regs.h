@@ -1,8 +1,8 @@
 /******************************************************************************
  *
- * Module: SPI - Registers
+ * Module: Interrupts - Registers
  *
- * File Name: ISR_Regs.h
+ * File Name: Interrupts_Regs.h
  *
  * Description: ISR Registers
  *

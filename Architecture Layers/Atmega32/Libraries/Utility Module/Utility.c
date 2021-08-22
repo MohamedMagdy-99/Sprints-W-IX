@@ -272,7 +272,7 @@ void stringConcatenate(uint8_t* destination, uint8_t* source)
 
 uint8_t Max_String_Num(uint8_t* string1, uint8_t* string2)
 {
-    uint8_t u8_retValue = stringCompare(string1,string2);
+    uint8_t u8_retValue = stringCmp(string1,string2);
 
     switch(u8_retValue)
     {
@@ -332,15 +332,15 @@ void stringHexToNum(uint8_t *pu8_String, uint16_t *pu16_Num)
 		if ((pu8_String[s8_loopIndex]>='0') && (pu8_String[s8_loopIndex]<='9'))
 		{
 			temp_val = pu8_String[s8_loopIndex] - '0';
-			*pu16_Num += temp_val*power(16,u8_powerValue++);
+			*pu16_Num += temp_val*nPowerM(16,u8_powerValue++);
 		}else if((pu8_String[s8_loopIndex]>='A') && (pu8_String[s8_loopIndex]<='F'))
 		{
 			temp_val = pu8_String[s8_loopIndex] - 55;
-			*pu16_Num += temp_val*power(16,u8_powerValue++);
+			*pu16_Num += temp_val*nPowerM(16,u8_powerValue++);
 		}else if((pu8_String[s8_loopIndex]>='a') && (pu8_String[s8_loopIndex]<='f'))
 		{
 			temp_val = pu8_String[s8_loopIndex] - 87;
-			*pu16_Num += temp_val*power(16,u8_powerValue++);
+			*pu16_Num += temp_val*nPowerM(16,u8_powerValue++);
 		}
 
 	}

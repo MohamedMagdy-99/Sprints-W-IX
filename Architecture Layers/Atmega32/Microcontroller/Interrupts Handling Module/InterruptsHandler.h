@@ -10,8 +10,7 @@
 #ifndef INTH_H_
 #define INTH_H_
 
-#include "../../Microcontroller/Atmega32 Registers/Interrupts_Regs.h"
-#include "../../Microcontroller/Std_Types.h"
+#include "../Std_Types.h"
 #include "../../Libraries/Common_Macros.h"
 
 /*- Primitive Types

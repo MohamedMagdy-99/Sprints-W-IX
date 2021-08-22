@@ -5,7 +5,6 @@
 * Author: Mohamed Magdy
 * Date: 14-July-2021
 ******************************************************************************/
-#include "InterruptsHandler.h"
 #include "InterruptsHandler_Interface.h"
 /*************************************************************************************/
 /*- Function Definitions

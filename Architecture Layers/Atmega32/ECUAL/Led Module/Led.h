@@ -32,7 +32,7 @@ typedef enum
 /*- STRUCTS AND UNIONS -------------------------------------*/
 typedef struct
 {
-	uint8_t u8_ButtonId;
+	uint8_t u8_LedDioId;
 }strLed_Config_t;
 
 /*******************************************************************************

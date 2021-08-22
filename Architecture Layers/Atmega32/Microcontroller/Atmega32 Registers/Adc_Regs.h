@@ -10,7 +10,7 @@
 #ifndef ADC_REGS_H_
 #define ADC_REGS_H_
 
-#include "Std_Types.h"
+#include "../Std_Types.h"
 
 /* ADMUX – ADC Multiplexer Selection Register */
 
