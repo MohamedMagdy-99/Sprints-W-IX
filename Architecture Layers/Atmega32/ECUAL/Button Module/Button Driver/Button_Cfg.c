@@ -3,7 +3,7 @@
 * File Name: Button_Cfg.c
 * Description: Source file for Button Module
 * Author: Mohamed Magdy
-* Date: 16-July-2021
+* Date: 21-July-2021
 ******************************************************************************/
 /*- INCLUDES
 ----------------------------------------------*/
@@ -14,10 +14,8 @@
 /* here you adjust the buttons configurations */
 strButton_Config_t strButton_Config[BUTTONS_USED]=
 {
-	/*Button Pin */ 
-	{  BUTTON_EXT_DIO_ID }
-
+	/*Button Pin */	/* Pull up or down */
+	{ BUTTON_1_DIO_ID	, PULL_UP },
+	{ BUTTON_2_DIO_ID	, PULL_UP }
 	
 };
-/*- APIs IMPLEMENTATION
------------------------------------*/

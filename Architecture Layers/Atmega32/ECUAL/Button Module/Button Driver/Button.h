@@ -3,7 +3,7 @@
 * File Name: Button.h
 * Description: Header file for Button Module
 * Author: Mohamed Magdy
-* Date: 16-July-2021
+* Date: 21-July-2021
 ******************************************************************************/ 
 
 #ifndef BUTTON_H_
@@ -12,18 +12,9 @@
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 /*-*-*-*-*- INCLUDES *-*-*-*-*-*/
 #include "Button_Cfg.h"
-#include "../../MCAL/Dio Module/Dio.h"
-#include "../../Microcontroller/Std_Types.h"
-#include "../../Libraries/Common_Macros.h"
-
-/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
-/*-*-*-*-*- CONSTANTS -*-*-*-*-*-*/
-/* Button State according to its configuration PULL UP/Down */
-#define BUTTON_STATE_RELEASED		STD_LOW
-#define BUTTON_STATE_PRESSED		STD_HIGH
-
-
-#define NO_BUTTON_PRESSED			-1
+#include "../../../MCAL/Dio Module/Dio.h"
+#include "../../../Microcontroller/Std_Types.h"
+#include "../../../Libraries/Common_Macros.h"
 
 /*******************************************************************************
  *                          Module Data Types                                  *
@@ -41,7 +32,8 @@ typedef enum
 /*- STRUCTS AND UNIONS -------------------------------------*/
 typedef struct
 {
-	uint8_t u8_ButtonId;
+	uint8_t u8_Button_DioId;
+	uint8_t u8_pullUpOrDown;
 }strButton_Config_t;
 
 /*******************************************************************************
@@ -50,11 +42,8 @@ typedef struct
 /* Function to initialize the button module */
 enuBttn_Status_t Button_init(void);
 
-/* Function to get the state of the button */
+/* Function to get the logic state of the button */
 enuBttn_Status_t Button_getState(uint8_t u8_bttnID, uint8_t* pu8_state);
-
-/* Function to update the state of the button */
-enuBttn_Status_t Button_updateState(uint8_t u8_bttnID);
 
 /* configuration variable */
 extern strButton_Config_t strButton_Config[BUTTONS_USED];
