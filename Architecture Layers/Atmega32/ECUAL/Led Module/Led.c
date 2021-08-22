@@ -36,7 +36,7 @@ enuLed_Status_t Led_init(void)
 ******************************************************************************************/
 enuLed_Status_t LedOn(uint8_t u8_LedId)
 {
-	Dio_writePin(strLed_Config[u8_LedId].u8_ButtonId, STD_HIGH);
+	Dio_writePin(strLed_Config[u8_LedId].u8_LedDioId, STD_HIGH);
 	return LED_STATUS_ERROR_OK;
 
 }
@@ -50,7 +50,7 @@ enuLed_Status_t LedOn(uint8_t u8_LedId)
 ******************************************************************************************/
 enuLed_Status_t LedOff(uint8_t u8_LedId)
 {
-	Dio_writePin(strLed_Config[u8_LedId].u8_ButtonId, STD_LOW);
+	Dio_writePin(strLed_Config[u8_LedId].u8_LedDioId, STD_LOW);
 	return LED_STATUS_ERROR_OK;
 }
 
@@ -62,7 +62,7 @@ enuLed_Status_t LedOff(uint8_t u8_LedId)
 ******************************************************************************************/
 enuLed_Status_t LedToggle(uint8_t u8_LedId)
 {
-	Dio_togglePin(strLed_Config[u8_LedId].u8_ButtonId);
+	Dio_togglePin(strLed_Config[u8_LedId].u8_LedDioId);
 	return LED_STATUS_ERROR_OK;
 }
 

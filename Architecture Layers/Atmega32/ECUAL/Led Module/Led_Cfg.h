@@ -9,15 +9,15 @@
 #ifndef LED_CFG_H_
 #define LED_CFG_H_
 
-#define USED_LEDS	3
+#define USED_LEDS	2
 
-#define GREEN_LED_DIO_ID		PORTD_PIN5_ID
-#define YELLOW_LED_DIO_ID		PORTD_PIN6_ID
-#define RED_LED_DIO_ID		    PORTD_PIN7_ID
+#define LED_1_DIO_ID		PORTA_PIN6_ID
+#define LED_2_DIO_ID		PORTC_PIN3_ID
 
-#define GREEN_LED	0
-#define YELLOW_LED	1
-#define RED_LED		2
+
+#define LED_1_ID	0
+#define LED_2_ID	1
+
 
 
 #endif /* LED_CFG_H_ */

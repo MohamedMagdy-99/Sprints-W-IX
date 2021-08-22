@@ -11,6 +11,7 @@
 #define INTERRUPTSHANDLER_INTERFACE_H_
 
 #include "InterruptsHandler.h"
+#include "../Atmega32 Registers/Interrupts_Regs.h"
 
 /*- CONSTATNS
 -------------------------------*/

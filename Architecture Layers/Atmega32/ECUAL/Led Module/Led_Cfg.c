@@ -17,8 +17,7 @@
 strLed_Config_t strLed_Config[USED_LEDS]=
 {
 	   /*Led Dio Id*/		   
-	{  GREEN_LED_DIO_ID  },
-	{  YELLOW_LED_DIO_ID },
-	{  RED_LED_DIO_ID    }
+	{  LED_1_DIO_ID },
+	{  LED_2_DIO_ID }
 
 };

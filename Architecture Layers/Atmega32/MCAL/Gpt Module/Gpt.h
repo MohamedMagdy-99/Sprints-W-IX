@@ -10,17 +10,20 @@
 #define GPT_H_
 
 /*- INCLUDES -----------------------------------------------*/
-#include "..\..\Microcontroller\Platform_Types.h"
-#include "../Interrupt Driver/ISR.h"
-#include "..\..\Microcontroller\Atmega32 Registers\Gpt_Regs.h"
-
-#include "Gpt_LCfg.h"
-//#include "../../MCAL/Interrupt Driver/ISR.h"
+#include "../../Microcontroller/Std_Types.h"
+#include "../../Microcontroller/Interrupts Handling Module/InterruptsHandler_Interface.h"
+#include "../../Microcontroller/Atmega32 Registers/Gpt_Regs.h"
+#include "Gpt_Cfg.h"
 
 /*- CONSTANTS ----------------------------------------------*/
 #define TIMER_0_MAX_TICKS	256
 #define TIMER_1_MAX_TICKS	65536
 #define TIMER_2_MAX_TICKS	256
+
+/* Timers Channels */
+#define TIMER_0   0
+#define TIMER_1   1
+#define TIMER_2   2
 /*- PRIMITIVE TYPES ----------------------------------------*/
 typedef void (*pfGpt_CallBack_t)(void);
 
@@ -62,9 +65,14 @@ enuGpt_Status_t GptStop(uint8_t ChannelId);
 
 enuGpt_Status_t Gpt_StartTimer(uint8_t ChannelId);
 
-void setOvfCallback(pfGpt_CallBack_t FunToBeCalledInISR);
-
 void Gpt_ReturnCounterVal(uint8_t ChannelId , uint32_t *u32_CounterVal);
+/* call back functions */
+void Gpt_T0Ovf_ISR(void);
+void Gpt_T1Ovf_ISR(void);
+void Gpt_T2Ovf_ISR(void);
+void Gpt_T1OvfCounter_ISR(void);
+
+
 /*- EXTERN VARIABLE DECLARATIONS ----------------------------------*/
 extern strGpt_Config_t strGpt_Channels[GPT_USED_CHANNELS];
 #endif /* GPT_H_ */

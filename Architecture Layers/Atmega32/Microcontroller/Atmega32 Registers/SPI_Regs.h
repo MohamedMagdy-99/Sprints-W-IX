@@ -16,7 +16,7 @@
 #ifndef  SPI_REGS_H_
 #define  SPI_REGS_H_
 
-#include "Std_Types.h"
+#include "../Std_Types.h"
 
 /* SPI Data Register is a read/write register */
 
