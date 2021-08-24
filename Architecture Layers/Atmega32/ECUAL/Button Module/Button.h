@@ -16,19 +16,14 @@
 #include "../../../Microcontroller/Std_Types.h"
 #include "../../../Libraries/Common_Macros.h"
 
+/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+/*-*-*-*-*- CONSTANTS -*-*-*-*-*-*/
+/* Button State  */
+#define BUTTON_STATE_RELEASED		(9U)
+#define BUTTON_STATE_PRESSED		(10U)
 /*******************************************************************************
  *                          Module Data Types                                  *
  *******************************************************************************/
-/*
- * Data Type for Button return status
- */
-typedef enum
-{
-	BTTN_STATUS_ERROR_NOK,
-	BTTN_STATUS_ERROR_OK,
-	BTTN_STATUS_ERROR_INVALID
-}enuBttn_Status_t;
-
 /*- STRUCTS AND UNIONS -------------------------------------*/
 typedef struct
 {
@@ -40,10 +35,10 @@ typedef struct
  *                      Function Prototypes                                    *
  *******************************************************************************/
 /* Function to initialize the button module */
-enuBttn_Status_t Button_init(void);
+Std_ReturnType Button_init(void);
 
 /* Function to get the logic state of the button */
-enuBttn_Status_t Button_getState(uint8_t u8_bttnID, uint8_t* pu8_state);
+Std_ReturnType Button_getState(uint8_t u8_bttnID, uint8_t* pu8_state);
 
 /* configuration variable */
 extern strButton_Config_t strButton_Config[BUTTONS_USED];
