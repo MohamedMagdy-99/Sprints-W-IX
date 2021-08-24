@@ -10,12 +10,6 @@
 ----------------------------------------------*/
 #include "Button.h"
 
-/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
-/*-*-*-*-*- CONSTANTS -*-*-*-*-*-*/
-/* Button State  */
-#define BUTTON_STATE_RELEASED		(9U)
-#define BUTTON_STATE_PRESSED		(10U)
-
 /*- LOCAL FUNCTIONS IMPLEMENTATION
 ------------------------*/
 /************************************************************************************
@@ -24,10 +18,10 @@
 * Return value: enuBttn_Status_t
 * Description: initialized the modules used by the button module
 ************************************************************************************/
-enuBttn_Status_t Button_init(void)
+Std_ReturnType Button_init(void)
 {
 	Dio_init();
-	return BTTN_STATUS_ERROR_OK;
+	return E_OK;
 }
 /************************************************************************************
 * Parameters (in): Button ID and pointer to variable to hold the state
@@ -35,7 +29,7 @@ enuBttn_Status_t Button_init(void)
 * Return value: enuBttn_Status_t
 * Description: gets the state of a given button pressed or released
 ************************************************************************************/
-enuBttn_Status_t Button_getState(uint8_t u8_bttnID, uint8_t * pu8_state)
+Std_ReturnType Button_getState(uint8_t u8_bttnID, uint8_t * pu8_state)
 {
 	Dio_readPin(strButton_Config[u8_bttnID].u8_Button_DioId, pu8_state);
 	
@@ -64,7 +58,7 @@ enuBttn_Status_t Button_getState(uint8_t u8_bttnID, uint8_t * pu8_state)
 			*pu8_state = BUTTON_STATE_PRESSED;
 		}
 	}
-	return BTTN_STATUS_ERROR_OK;
+	return E_OK;
 }
 
 
