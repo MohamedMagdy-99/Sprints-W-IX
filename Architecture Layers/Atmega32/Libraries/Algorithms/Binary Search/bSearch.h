@@ -10,7 +10,6 @@
 /*- INCLUDES -----------------------------------------------*/
 #include "Std_Types.h"
 /*- CONSTANTS ----------------------------------------------*/
-#define Initial_Value   0
 #define Number_Not_Found 100
 #define Arr_Sorted   99
 #define Arr_Not_Sorted  98

@@ -14,6 +14,7 @@
 #include "Common_Macros.h"
 #include "Gpt.h"
 #include "OS_Cfg.h"
+#include "bSearch.h"
 
 
 /*- Primitive Types
@@ -77,6 +78,12 @@ Std_ReturnType OS_SetPeriodicity(TaskId_t Id);
 Std_ReturnType OS_GetTaskIndex(TaskId_t Id, TaskIndex_t* TaskIndex);
 /* start system */
 Std_ReturnType OS_Start(void);
+/* OS init */
+Std_ReturnType OS_Init(void);
+/* scheduler start */
+Std_ReturnType OS_Scheduler(void);
+/* check if any task is currently running */
+boolean OS_checkIfTaskRunning(void);
 /* ticks update callback */
 void OS_CallBack(void);
 
