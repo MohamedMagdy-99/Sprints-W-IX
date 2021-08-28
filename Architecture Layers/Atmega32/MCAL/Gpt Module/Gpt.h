@@ -10,9 +10,9 @@
 #define GPT_H_
 
 /*- INCLUDES -----------------------------------------------*/
-#include "../../Microcontroller/Std_Types.h"
-#include "../../Microcontroller/Interrupts Handling Module/InterruptsHandler_Interface.h"
-#include "../../Microcontroller/Atmega32 Registers/Gpt_Regs.h"
+#include "Std_Types.h"
+#include "InterruptsHandler_Interface.h"
+#include "Gpt_Regs.h"
 #include "Gpt_Cfg.h"
 
 /*- CONSTANTS ----------------------------------------------*/
