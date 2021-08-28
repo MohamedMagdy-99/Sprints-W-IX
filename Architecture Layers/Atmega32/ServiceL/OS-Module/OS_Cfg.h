@@ -15,6 +15,6 @@
  
  #define MAX_NUM_TASKS					(5U)
 
-
+ #define MAX_PRIOIRTY					(255U)
 
 #endif /* OS_CFG_H_ */
