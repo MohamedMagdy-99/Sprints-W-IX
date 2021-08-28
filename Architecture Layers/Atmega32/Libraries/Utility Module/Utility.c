@@ -345,3 +345,26 @@ void stringHexToNum(uint8_t *pu8_String, uint16_t *pu16_Num)
 
 	}
 }
+
+
+uint8_t ReturnIndexOfLargestElement(uint8_t* arr, uint8_t numOfElements) 
+{
+	uint8_t u8_c, u8_index = 0;
+
+	for (u8_c = 1; u8_c < numOfElements; u8_c++)
+	if (arr[u8_c] > arr[u8_index])
+	u8_index = u8_c;
+
+	return u8_index;
+}
+
+uint8_t ReturnIndexOfSmallestElement(uint8_t* arr, uint8_t numOfElements)
+{
+	uint8_t u8_c, u8_index = 0;
+
+	for (u8_c = 1; u8_c < numOfElements; u8_c++)
+	if (arr[u8_c] < arr[u8_index])
+	u8_index = u8_c;
+
+	return u8_index;
+}
