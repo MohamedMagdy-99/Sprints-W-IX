@@ -68,7 +68,7 @@ uint8_t arraySortedOrNot(uint8_t* au8_arr, uint8_t u8_NumberOfElements)
 * Parameters (in): array to be searched, size of array, number to be searched for
 * Parameters (out): Number
 * Return value: uint8_t
-* Description: searches for a number in an array
+* Description: searches for a number in an array and returns its index if found
 ************************************************************************************/
 uint8_t binarySearch(uint8_t* au8_arr, uint8_t u8_NumberOfElements, uint8_t u8_Number)
 {
@@ -86,8 +86,8 @@ uint8_t binarySearch(uint8_t* au8_arr, uint8_t u8_NumberOfElements, uint8_t u8_N
 
        if(au8_arr[u8_Mid] == u8_Number)
        {
-           //printf("\nNumber ( %d ) was found\n", u8_Number);
-           return au8_arr[u8_Mid];
+           //return au8_arr[u8_Mid]; //return avalue
+		   return u8_Mid;		   // return index
        }
        else if(u8_Number < au8_arr[u8_Mid])
        {
