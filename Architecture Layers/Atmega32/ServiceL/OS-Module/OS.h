@@ -32,6 +32,10 @@ typedef uint32_t OS_SysTicks_t;
 typedef uint8_t TaskIndex_t;
 /* pointer to function representing the task which can take input parameter */
 typedef Std_ReturnType (*ptrTask_t) (TaskParameters_t);
+/* current number of tasks created in system */
+typedef uint8_t CreatedTasksCount_t;
+/* OS tick flag */
+typedef uint8_t OS_NewTickFlag_t;
  /*- Constants
  -------------------------------*/
  
@@ -47,13 +51,22 @@ typedef struct
 	
 }strTasksCreationData_t;
 
+  /*- Structs
+ -------------------------------*/
+typedef enum
+{
+	BLOCKED,
+	RUNNING,
+	READY,
+	SUSPENDED
+}TaskState_t;
 /*- Function Declarations
 -------------------------------*/
 /* task creation */
 Std_ReturnType OS_TaskCreate(TaskId_t Id, TaskPriority_t Priority, TaskPeriodicityTicks_t Periodicity, 
 							 ptrTask_t TaskPointer, TaskParameters_t Parameters);
 /* task lock */							 
-Std_ReturnType OS_TaskLock(TaskId_t Id);
+Std_ReturnType OS_TaskSuspend(TaskId_t Id);
 /* task resume */
 Std_ReturnType OS_TaskResume(TaskId_t Id);
 /* set task's prio */
