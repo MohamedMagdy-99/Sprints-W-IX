@@ -402,3 +402,15 @@ Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState)
 
 	return E_OK;
 }
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: gets the current system tick
+******************************************************************************************/
+Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTick)
+{
+	*Sys_CurrentTick = Sys_CurrentTime;
+	return E_OK;
+}

@@ -94,6 +94,8 @@ Std_ReturnType OS_Scheduler(void);
 boolean OS_checkIfTaskRunning(void);
 /* set tasks' index */
 Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState);
+/* get current sys tick */
+Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTime);
 /* ticks update callback */
 void OS_CallBack(void);
 
