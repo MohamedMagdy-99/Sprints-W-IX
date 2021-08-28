@@ -77,9 +77,9 @@ Std_ReturnType OS_TaskSuspend(TaskId_t Id);
 /* task resume */
 Std_ReturnType OS_TaskResume(TaskId_t Id);
 /* set task's prio */
-Std_ReturnType OS_SetPriority(TaskId_t Id);
+Std_ReturnType OS_SetPriority(TaskId_t Id, TaskPriority_t Priority);
 /*set task's periodicity */
-Std_ReturnType OS_SetPeriodicity(TaskId_t Id);
+Std_ReturnType OS_SetPeriodicity(TaskId_t Id, TaskPeriodicityTicks_t Periodicity);
 /* get task's index in array using id */
 Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex);
 /* get task's index in array using prio */

@@ -115,7 +115,7 @@ Std_ReturnType OS_Scheduler(void)
 					uint8_t u8_loopCounter = Initial_Value;
 					for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
 					{
-						if((Sys_CurrentTime % (Tasks[u8_loopCounter].Periodicity)) == 0)
+						if(((Sys_CurrentTime % (Tasks[u8_loopCounter].Periodicity)) == 0) && TasksCurrentState[u8_loopCounter] != SUSPENDED)
 						{
 							/* set its state to ready */
 							OS_setTaskState(Tasks_Ids[u8_loopCounter], READY);
@@ -123,6 +123,7 @@ Std_ReturnType OS_Scheduler(void)
 							OS_TaskWillRunFlag = TRUE;
 						}
 					}
+					/* if any task is confirmed to run in this sys tick */
 					if(OS_TaskWillRunFlag == TRUE)
 					{
 						/* compare the priority of nominated tasks */
@@ -275,6 +276,11 @@ Std_ReturnType OS_GetTaskIndex_Prio(TaskPriority_t Priority, TaskIndex_t* TaskIn
 ******************************************************************************************/
 Std_ReturnType OS_TaskSuspend(TaskId_t Id)
 {
+		TaskIndex_t TaskIndex = Initial_Value;
+		/* get the task's index */
+		OS_GetTaskIndex_Id(Id, &TaskIndex);
+		/* change the state */
+		TasksCurrentState[TaskIndex] = SUSPENDED;	
 	return E_OK;
 }
 
@@ -286,6 +292,11 @@ Std_ReturnType OS_TaskSuspend(TaskId_t Id)
 ******************************************************************************************/
 Std_ReturnType OS_TaskResume(TaskId_t Id)
 {
+	TaskIndex_t TaskIndex = Initial_Value;
+	/* get the task's index */
+	OS_GetTaskIndex_Id(Id, &TaskIndex);
+	/* change the state */
+	TasksCurrentState[TaskIndex] = BLOCKED;	
 	return E_OK;
 }
 
@@ -295,8 +306,13 @@ Std_ReturnType OS_TaskResume(TaskId_t Id)
 * Return value: Std_ReturnType
 * Description: changes a certain task's priority
 ******************************************************************************************/
-Std_ReturnType OS_SetPriority(TaskId_t Id)
+Std_ReturnType OS_SetPriority(TaskId_t Id, TaskPriority_t Priority)
 {
+	TaskIndex_t TaskIndex = Initial_Value;
+	/* get the task's index */
+	OS_GetTaskIndex_Id(Id, &TaskIndex);
+	/* change the Priority */
+	Tasks[TaskIndex].Periodicity = Priority;	
 	return E_OK;
 }
 
@@ -306,8 +322,14 @@ Std_ReturnType OS_SetPriority(TaskId_t Id)
 * Return value: Std_ReturnType
 * Description: changes a certain task's periodicity
 ******************************************************************************************/
-Std_ReturnType OS_SetPeriodicity(TaskId_t Id)
+Std_ReturnType OS_SetPeriodicity(TaskId_t Id, TaskPeriodicityTicks_t Periodicity)
 {
+	TaskIndex_t TaskIndex = Initial_Value;
+	/* get the task's index */
+	OS_GetTaskIndex_Id(Id, &TaskIndex);
+	/* change the periodicity */
+	Tasks[TaskIndex].Periodicity = Periodicity;
+	
 	return E_OK;
 }
 
@@ -346,16 +368,36 @@ Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState)
 	{
 		for(u8_loopCounter = Initial_Value; u8_loopCounter < MAX_NUM_TASKS; u8_loopCounter++)
 		{
-			TasksCurrentState[u8_loopCounter] = TaskState;
+			/* check if a task is suspended don't change it */
+			if(TasksCurrentState[u8_loopCounter] == SUSPENDED)
+			{
+				/* ignore */
+				return E_NOT_OK;
+			}
+			else
+			{
+				TasksCurrentState[u8_loopCounter] = TaskState;
+			}
+			
 		}	
 	}
 	else
 	{
-		TaskIndex_t TaskIndex = Initial_Value;
-		/* get the task's index */
-		OS_GetTaskIndex_Id(Id, &TaskIndex);
-		/* change the state */
-		TasksCurrentState[TaskIndex] = TaskState;
+		/* check if a task is suspended ignore the call */
+		if(TasksCurrentState[u8_loopCounter] == SUSPENDED)
+		{
+			/* ignore */
+			return E_NOT_OK;
+		}
+		else
+		{
+			TaskIndex_t TaskIndex = Initial_Value;
+			/* get the task's index */
+			OS_GetTaskIndex_Id(Id, &TaskIndex);
+			/* change the state */
+			TasksCurrentState[TaskIndex] = TaskState;
+		}
+
 	}
 
 	return E_OK;
