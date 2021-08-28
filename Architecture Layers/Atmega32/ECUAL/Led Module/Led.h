@@ -12,9 +12,9 @@
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 /*-*-*-*-*- INCLUDES *-*-*-*-*-*/
 #include "Led_Cfg.h"
-#include "../../MCAL/Dio Module/Dio.h"
-#include "../../Microcontroller/Std_Types.h"
-#include "../../Libraries/Common_Macros.h"
+#include "Dio.h"
+#include "Std_Types.h"
+#include "Common_Macros.h"
 
 /*******************************************************************************
  *                          Module Data Types                                  *

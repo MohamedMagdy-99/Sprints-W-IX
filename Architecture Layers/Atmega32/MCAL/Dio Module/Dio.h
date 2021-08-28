@@ -12,9 +12,9 @@
 
 /* INCLUDES */
 
-#include "../../Microcontroller/Std_Types.h"
-#include "../../Libraries/Common_Macros.h"
-#include "../../Microcontroller/Atmega32 Registers/Port_Regs.h"
+#include "Std_Types.h"
+#include "Common_Macros.h"
+#include "Port_Regs.h"
 #include "Dio_Cfg.h"
 
 

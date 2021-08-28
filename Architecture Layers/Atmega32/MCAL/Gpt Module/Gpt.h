@@ -10,9 +10,9 @@
 #define GPT_H_
 
 /*- INCLUDES -----------------------------------------------*/
-#include "../../Microcontroller/Std_Types.h"
-#include "../../Microcontroller/Interrupts Handling Module/InterruptsHandler_Interface.h"
-#include "../../Microcontroller/Atmega32 Registers/Gpt_Regs.h"
+#include "Std_Types.h"
+#include "InterruptsHandler_Interface.h"
+#include "Gpt_Regs.h"
 #include "Gpt_Cfg.h"
 
 /*- CONSTANTS ----------------------------------------------*/
@@ -66,6 +66,7 @@ enuGpt_Status_t GptStop(uint8_t ChannelId);
 enuGpt_Status_t Gpt_StartTimer(uint8_t ChannelId);
 
 void Gpt_ReturnCounterVal(uint8_t ChannelId , uint32_t *u32_CounterVal);
+
 /* call back functions */
 void Gpt_T0Ovf_ISR(void);
 void Gpt_T1Ovf_ISR(void);

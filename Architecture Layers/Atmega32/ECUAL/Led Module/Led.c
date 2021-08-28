@@ -63,6 +63,7 @@ enuLed_Status_t LedOff(uint8_t u8_LedId)
 enuLed_Status_t LedToggle(uint8_t u8_LedId)
 {
 	Dio_togglePin(strLed_Config[u8_LedId].u8_LedDioId);
+	
 	return LED_STATUS_ERROR_OK;
 }
 
