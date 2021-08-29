@@ -116,7 +116,7 @@ Std_ReturnType OS_Init(void)
 		EnableGlobalInterrupts();
 
 		/* start timer for first time */
-		GptStart_aSync(TIMER_CHANNEL_0_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);	
+		GptStart_aSync(TIMER_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);	
 		
 		/* set init flag */
 		OS_InitializedFlag = TRUE;
@@ -225,7 +225,7 @@ STATIC void OS_CallBack(void)
 	}		
 
 	/* restart the timer */
-	GptStart_aSync(TIMER_CHANNEL_0_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);
+	GptStart_aSync(TIMER_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);
 }
 
 /*****************************************************************************************
