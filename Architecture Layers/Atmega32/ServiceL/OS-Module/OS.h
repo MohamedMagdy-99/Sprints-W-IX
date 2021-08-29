@@ -38,6 +38,9 @@ typedef boolean OS_NewTickFlag_t;
 
 /* task will run flag */
 typedef boolean OS_TaskWillRunFlag_t;
+
+/* task is running flag */
+typedef boolean OS_TaskIsRunningFlag_t;
  /*- Constants
  -------------------------------*/
  /* input used in OS_setTaskState function */
@@ -52,8 +55,6 @@ typedef struct
 {
 	ptrTask_t TaskPointer;
 	TaskParameters_t Parameters;
-// 	TaskId_t Id;
-// 	TaskPriority_t Priority;
 	TaskPeriodicityTicks_t Periodicity;
 	
 }strTasksCreationData_t;
@@ -92,6 +93,8 @@ Std_ReturnType OS_Init(void);
 Std_ReturnType OS_Scheduler(void);
 /* check if any task is currently running */
 boolean OS_checkIfTaskRunning(void);
+/* check if any task is currently ready */
+boolean OS_checkIfTaskReady(void);
 /* set tasks' index */
 Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState);
 /* get current sys tick */

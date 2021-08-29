@@ -32,6 +32,9 @@ OS_NewTickFlag_t OS_NewTickFlag = TRUE;
 /* a flag to indicate that a task will run */
 OS_TaskWillRunFlag_t OS_TaskWillRunFlag = FALSE;
 
+/* a flag to indicate that a task is running */
+OS_TaskIsRunningFlag_t OS_TaskIsRunningFlag = FALSE;
+
 /* variable to hold tasks current state */
 TaskState_t TasksCurrentState[MAX_NUM_TASKS];
 
@@ -89,7 +92,7 @@ Std_ReturnType OS_Scheduler(void)
 		if(OS_NewTickFlag == TRUE)
 		{
 			/* if a task is already running now, leave the if condition */
-			if(OS_checkIfTaskRunning() == TRUE)
+			if(OS_TaskIsRunningFlag == TRUE)
 			{
 				/* a task is already running we have to wait */
 				/* reset tick flag */
@@ -97,70 +100,46 @@ Std_ReturnType OS_Scheduler(void)
 			}
 			else
 			{
-				/* check if it's the initial sys tick (0) which means all tasks are ready */
-				if(Sys_CurrentTime == Initial_Value)
+				OS_TaskWillRunFlag = OS_checkIfTaskReady();
+				/* if any task is ready to run */
+				if(OS_TaskWillRunFlag == TRUE)
 				{
-					/* compare priority */
-					CurrentlyRunningTaskIndex = ReturnIndexOfSmallestElement(Tasks_Priority, CreatedTasksCount);
+					/* compare the priority of ready tasks */
+					uint8_t u8_loopCounter = Initial_Value;
+					uint8_t maxPrioirtyTemp = MAX_PRIOIRTY;
+					for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
+					{
+						if(TasksCurrentState[u8_loopCounter] == READY)
+						{
+							if(Tasks_Priority[u8_loopCounter] <= maxPrioirtyTemp)
+							{
+								/* update new max prio */
+								maxPrioirtyTemp = Tasks_Priority[u8_loopCounter];
+								/* update current task index to be running */
+								CurrentlyRunningTaskIndex = u8_loopCounter;
+							}
+						}
+					}
+					/* task is running flag set */
+					OS_TaskIsRunningFlag = TRUE;
+					/* set state of winner task to running */
+					OS_setTaskState(Tasks_Ids[CurrentlyRunningTaskIndex], RUNNING);
 					/* run the winner task */
 					Tasks[CurrentlyRunningTaskIndex].TaskPointer(Tasks[CurrentlyRunningTaskIndex].Parameters);
-					/* block all the task */
-					OS_setTaskState(ALL_TASKS, BLOCKED);
+					/* block the task that finished task */
+					OS_setTaskState(TasksCurrentState[CurrentlyRunningTaskIndex], BLOCKED);
 					/* reset tick flag */
-					OS_NewTickFlag = FALSE;
+					OS_NewTickFlag = FALSE;		
+					/* reset task is running flag */
+					OS_TaskIsRunningFlag = FALSE;			
 				}
 				else
 				{
-					/* else compare current sys ticks with tasks periodicity to know which tasks can run now and make them ready */
-					uint8_t u8_loopCounter = Initial_Value;
-					for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
-					{
-						if(((Sys_CurrentTime % (Tasks[u8_loopCounter].Periodicity)) == 0) && TasksCurrentState[u8_loopCounter] != SUSPENDED)
-						{
-							/* set its state to ready */
-							OS_setTaskState(Tasks_Ids[u8_loopCounter], READY);
-							/* set task will run flag */
-							OS_TaskWillRunFlag = TRUE;
-						}
-					}
-					/* if any task is confirmed to run in this sys tick */
-					if(OS_TaskWillRunFlag == TRUE)
-					{
-						/* compare the priority of nominated tasks */
-						uint8_t maxPrioirtyTemp = MAX_PRIOIRTY;
-						for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
-						{
-							if(TasksCurrentState[u8_loopCounter] == READY)
-							{
-								if(Tasks_Priority[u8_loopCounter] <= maxPrioirtyTemp)
-								{
-									/* update new max prio */
-									maxPrioirtyTemp = Tasks_Priority[u8_loopCounter];
-									/* update current task index to be running */
-									CurrentlyRunningTaskIndex = u8_loopCounter;
-								}
-							}
-						}
-						/* set state of winner task to running */
-						OS_setTaskState(Tasks_Ids[CurrentlyRunningTaskIndex], RUNNING);
-						/* run the winner task */
-						Tasks[CurrentlyRunningTaskIndex].TaskPointer(Tasks[CurrentlyRunningTaskIndex].Parameters);
-						/* block all tasks */
-						OS_setTaskState(ALL_TASKS, BLOCKED);
-						/* reset tick flag */
-						OS_NewTickFlag = FALSE;		
-						/* rest task will run flag */
-						OS_TaskWillRunFlag = FALSE;				
-					}
-					else
-					{
-						/* no task's periodicity matches current sys tick so no tasks will run */
-											
-						/* reset tick flag */
-						OS_NewTickFlag = FALSE;
-					}
-				}
-						
+					/* no task needs to run in this ticks, system is idle */
+										
+					/* reset tick flag */
+					OS_NewTickFlag = FALSE;
+				}		
 			}
 
 		}
@@ -181,6 +160,18 @@ void OS_CallBack(void)
 	/* update new tick flag */
 	OS_NewTickFlag = TRUE;
 	
+	/* update state of tasks */
+	/*  compare current sys ticks with tasks periodicity to know which tasks can run now and make them ready */
+	uint8_t u8_loopCounter = Initial_Value;
+	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
+	{
+		if(((Sys_CurrentTime % (Tasks[u8_loopCounter].Periodicity)) == 0) && TasksCurrentState[u8_loopCounter] != SUSPENDED)
+		{
+			/* set its state to ready */
+			OS_setTaskState(Tasks_Ids[u8_loopCounter], READY);
+		}
+	}		
+
 	/* restart the timer */
 	GptStart_aSync(TIMER_CHANNEL_0_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);
 }
@@ -203,10 +194,8 @@ Std_ReturnType OS_TaskCreate(TaskId_t Id, TaskPriority_t Priority, TaskPeriodici
 		return E_NOT_OK;
 	}
 	/* store task data in array */
-/*	Tasks[TaskToBeStoredIndex].Id = Id;*/
 	Tasks[TaskToBeStoredIndex].Parameters = Parameters;
 	Tasks[TaskToBeStoredIndex].Periodicity = Periodicity;
-/*	Tasks[TaskToBeStoredIndex].Priority = Priority;*/
 	Tasks[TaskToBeStoredIndex].TaskPointer = TaskPointer;
 	/* set initial state */
 	TasksCurrentState[TaskToBeStoredIndex] = READY;
@@ -337,7 +326,7 @@ Std_ReturnType OS_SetPeriodicity(TaskId_t Id, TaskPeriodicityTicks_t Periodicity
 * Parameters (in): None
 * Parameters (out): Error Status
 * Return value: Std_ReturnType
-* Description: starts the OS
+* Description: checks is any task is running
 ******************************************************************************************/
 boolean OS_checkIfTaskRunning(void)
 {
@@ -345,6 +334,25 @@ boolean OS_checkIfTaskRunning(void)
 	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
 	{
 		if(TasksCurrentState[u8_loopCounter] == RUNNING)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: checks is any task is ready
+******************************************************************************************/
+boolean OS_checkIfTaskReady(void)
+{
+	uint8_t u8_loopCounter = Initial_Value;
+	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
+	{
+		if(TasksCurrentState[u8_loopCounter] == READY)
 		{
 			return TRUE;
 		}
