@@ -1,9 +1,10 @@
-/*
- * OS_Cfg.h
- *
- * Created: 28-Aug-21 5:22:58 PM
- *  Author: Megz
- */ 
+/*****************************************************************************
+* Module: OS Module
+* File Name: OS_Cfg.h
+* Description: Header file for OS Module
+* Author: Mohamed Magdy
+* Date: 28-Aug-2021
+******************************************************************************/
 
 
 #ifndef OS_CFG_H_
@@ -15,6 +16,6 @@
  
  #define MAX_NUM_TASKS					(5U)
 
- #define MAX_PRIOIRTY					(255U)
+ #define MAX_PRIOIRTY					(255U)  /* 0 is least priority */
 
 #endif /* OS_CFG_H_ */

@@ -40,6 +40,21 @@ TaskState_t TasksCurrentState[MAX_NUM_TASKS];
 
 /* currently running taks index */
 TaskIndex_t CurrentlyRunningTaskIndex = Initial_Value;
+/* OS is initialized flag */
+OS_InitializedFlag_t OS_InitializedFlag = FALSE;
+
+/*- STATIC FUNCTION DECLARATIONS
+--------------------------------*/
+/* scheduler start */
+STATIC Std_ReturnType OS_Scheduler(void);
+/* check if any task is currently ready */
+STATIC boolean OS_checkIfTaskReady(void);
+/* set tasks' index */
+STATIC Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState);
+/* ticks update callback */
+STATIC void OS_CallBack(void);
+/* get task's index in array using id */
+STATIC Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex);
 
 /*- LOCAL FUNCTIONS IMPLEMENTATION
 ------------------------*/
@@ -64,16 +79,27 @@ Std_ReturnType OS_Start(void)
 ******************************************************************************************/
 Std_ReturnType OS_Init(void)
 {
-	/* initialize tasks states to suspended until they are created */
-	uint8_t u8_loopCounter = Initial_Value;
-	
-	for(u8_loopCounter = Initial_Value; u8_loopCounter < MAX_NUM_TASKS; u8_loopCounter++)
+	if(OS_InitializedFlag == TRUE)
 	{
-		TasksCurrentState[u8_loopCounter] = SUSPENDED;
+		return E_NOT_OK;
+	}
+	else
+	{
+		/* initialize tasks states to suspended until they are created */
+		uint8_t u8_loopCounter = Initial_Value;
+		
+		for(u8_loopCounter = Initial_Value; u8_loopCounter < MAX_NUM_TASKS; u8_loopCounter++)
+		{
+			TasksCurrentState[u8_loopCounter] = SUSPENDED;
+		}
+
+		/* start timer for first time */
+		GptStart_aSync(TIMER_CHANNEL_0_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);	
+		
+		/* set init flag */
+		OS_InitializedFlag = TRUE;
 	}
 
-	/* start timer for first time */
-	GptStart_aSync(TIMER_CHANNEL_0_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);
 	
 	return E_OK;
 }
@@ -82,9 +108,9 @@ Std_ReturnType OS_Init(void)
 * Parameters (in): None
 * Parameters (out): Error Status
 * Return value: Std_ReturnType
-* Description: starts the OS
+* Description: starts the OS scheduler
 ******************************************************************************************/
-Std_ReturnType OS_Scheduler(void)
+STATIC Std_ReturnType OS_Scheduler(void)
 {
 
 	while(TRUE)
@@ -135,10 +161,12 @@ Std_ReturnType OS_Scheduler(void)
 				}
 				else
 				{
-					/* no task needs to run in this ticks, system is idle */
-										
 					/* reset tick flag */
 					OS_NewTickFlag = FALSE;
+					
+					/* no task needs to run in this ticks, system is idle */
+										
+
 				}		
 			}
 
@@ -152,7 +180,7 @@ Std_ReturnType OS_Scheduler(void)
 * Return value: None
 * Description: call back function to update OS SysTicks each ISR
 ******************************************************************************************/
-void OS_CallBack(void)
+STATIC void OS_CallBack(void)
 {
 	/* update sys tick */
 	Sys_CurrentTime++;
@@ -161,7 +189,7 @@ void OS_CallBack(void)
 	OS_NewTickFlag = TRUE;
 	
 	/* update state of tasks */
-	/*  compare current sys ticks with tasks periodicity to know which tasks can run now and make them ready */
+	/* compare current sys ticks with tasks periodicity to know which tasks can run now and make them ready */
 	uint8_t u8_loopCounter = Initial_Value;
 	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
 	{
@@ -182,7 +210,7 @@ void OS_CallBack(void)
 * Return value: Std_ReturnType
 * Description: creates a Task to be added to the system queue.
 ******************************************************************************************/
-Std_ReturnType OS_TaskCreate(TaskId_t Id, TaskPriority_t Priority, TaskPeriodicityTicks_t Periodicity,
+Std_ReturnType OS_TaskCreate(TaskId_t* Id, TaskPriority_t Priority, TaskPeriodicityTicks_t Periodicity,
 							 ptrTask_t TaskPointer, TaskParameters_t Parameters)
 {
 
@@ -200,7 +228,9 @@ Std_ReturnType OS_TaskCreate(TaskId_t Id, TaskPriority_t Priority, TaskPeriodici
 	/* set initial state */
 	TasksCurrentState[TaskToBeStoredIndex] = READY;
 	/* store task index using its id */
-	Tasks_Ids[TaskToBeStoredIndex] = Id;
+	Tasks_Ids[TaskToBeStoredIndex] = TaskToBeStoredIndex;
+	/* return the id to user */
+	*Id = TaskToBeStoredIndex;
 	/* store task index using its prio */
 	Tasks_Priority[TaskToBeStoredIndex] = Priority;
 	/* increment index and tasks count */
@@ -215,7 +245,7 @@ Std_ReturnType OS_TaskCreate(TaskId_t Id, TaskPriority_t Priority, TaskPeriodici
 * Return value: Std_ReturnType
 * Description: gets index of task in the tasks' array using its Id
 ******************************************************************************************/
-Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex)
+STATIC Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex)
 {
 		
 	uint8_t u8_loopCounter = Initial_Value;
@@ -223,30 +253,6 @@ Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex)
 	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
 	{
 		if(Tasks_Ids[u8_loopCounter] == Id)
-		{
-			*TaskIndex =  u8_loopCounter;
-			return E_OK;
-		}
-	}
-	/* task id not found */
-	*TaskIndex = 0xFF;
-	return E_OK;
-}
-
-/*****************************************************************************************
-* Parameters (in): None
-* Parameters (out): Error Status
-* Return value: Std_ReturnType
-* Description: gets index of task in the tasks' array using its Priority
-******************************************************************************************/
-Std_ReturnType OS_GetTaskIndex_Prio(TaskPriority_t Priority, TaskIndex_t* TaskIndex)
-{
-	
-	uint8_t u8_loopCounter = Initial_Value;
-	
-	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
-	{
-		if(Tasks_Priority[u8_loopCounter] == Priority)
 		{
 			*TaskIndex =  u8_loopCounter;
 			return E_OK;
@@ -330,15 +336,7 @@ Std_ReturnType OS_SetPeriodicity(TaskId_t Id, TaskPeriodicityTicks_t Periodicity
 ******************************************************************************************/
 boolean OS_checkIfTaskRunning(void)
 {
-	uint8_t u8_loopCounter = Initial_Value;
-	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
-	{
-		if(TasksCurrentState[u8_loopCounter] == RUNNING)
-		{
-			return TRUE;
-		}
-	}
-	return FALSE;
+	return OS_TaskIsRunningFlag;
 }
 
 /*****************************************************************************************
@@ -347,7 +345,7 @@ boolean OS_checkIfTaskRunning(void)
 * Return value: Std_ReturnType
 * Description: checks is any task is ready
 ******************************************************************************************/
-boolean OS_checkIfTaskReady(void)
+STATIC boolean OS_checkIfTaskReady(void)
 {
 	uint8_t u8_loopCounter = Initial_Value;
 	for(u8_loopCounter = Initial_Value; u8_loopCounter < CreatedTasksCount; u8_loopCounter++)
@@ -366,7 +364,7 @@ boolean OS_checkIfTaskReady(void)
 * Return value: Std_ReturnType
 * Description: changes a task's state or all tasks
 ******************************************************************************************/
-Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState)
+STATIC Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState)
 {
 	
 	uint8_t u8_loopCounter = Initial_Value;

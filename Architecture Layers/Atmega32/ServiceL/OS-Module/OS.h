@@ -14,7 +14,6 @@
 #include "Common_Macros.h"
 #include "Gpt.h"
 #include "OS_Cfg.h"
-#include "Utility.h"
 /*- Primitive Types
 -------------------------------*/
 /* void pointer to parameters to be passed to the task */
@@ -41,6 +40,10 @@ typedef boolean OS_TaskWillRunFlag_t;
 
 /* task is running flag */
 typedef boolean OS_TaskIsRunningFlag_t;
+
+/* OS is initialized flag */
+typedef boolean OS_InitializedFlag_t;
+
  /*- Constants
  -------------------------------*/
  /* input used in OS_setTaskState function */
@@ -68,10 +71,11 @@ typedef enum
 	READY,
 	SUSPENDED
 }TaskState_t;
+
 /*- Function Declarations
 -------------------------------*/
 /* task creation */
-Std_ReturnType OS_TaskCreate(TaskId_t Id, TaskPriority_t Priority, TaskPeriodicityTicks_t Periodicity, 
+Std_ReturnType OS_TaskCreate(TaskId_t* Id, TaskPriority_t Priority, TaskPeriodicityTicks_t Periodicity, 
 							 ptrTask_t TaskPointer, TaskParameters_t Parameters);
 /* task lock */							 
 Std_ReturnType OS_TaskSuspend(TaskId_t Id);
@@ -81,31 +85,16 @@ Std_ReturnType OS_TaskResume(TaskId_t Id);
 Std_ReturnType OS_SetPriority(TaskId_t Id, TaskPriority_t Priority);
 /*set task's periodicity */
 Std_ReturnType OS_SetPeriodicity(TaskId_t Id, TaskPeriodicityTicks_t Periodicity);
-/* get task's index in array using id */
-Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex);
-/* get task's index in array using prio */
-Std_ReturnType OS_GetTaskIndex_Prio(TaskPriority_t Priority, TaskIndex_t* TaskIndex);
 /* start system */
 Std_ReturnType OS_Start(void);
 /* OS init */
 Std_ReturnType OS_Init(void);
-/* scheduler start */
-Std_ReturnType OS_Scheduler(void);
-/* check if any task is currently running */
-boolean OS_checkIfTaskRunning(void);
-/* check if any task is currently ready */
-boolean OS_checkIfTaskReady(void);
-/* set tasks' index */
-Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState);
 /* get current sys tick */
 Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTime);
-/* ticks update callback */
-void OS_CallBack(void);
+/* check if any task is currently running */
+boolean OS_checkIfTaskRunning(void);
 
 /*- Extern Variables
 -------------------------------*/
-extern strTasksCreationData_t Tasks[MAX_NUM_TASKS];
-
-
 
 #endif /* OS_H_ */
