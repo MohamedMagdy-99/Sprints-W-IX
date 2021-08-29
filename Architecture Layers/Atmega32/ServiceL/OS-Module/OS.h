@@ -25,7 +25,7 @@ typedef uint8_t  TaskPriority_t;
 /* task periodicity in sys ticks */
 typedef uint16_t TaskPeriodicityTicks_t;
 /* master sys tick monitor like a clock */
-typedef uint32_t OS_SysTicks_t;
+typedef volatile uint32_t OS_SysTicks_t;
 /* index for tasks array */
 typedef uint8_t TaskIndex_t;
 /* pointer to function representing the task which can take input parameter */
@@ -33,7 +33,7 @@ typedef Std_ReturnType (*ptrTask_t) (TaskParameters_t);
 /* current number of tasks created in system */
 typedef uint8_t CreatedTasksCount_t;
 /* OS tick flag */
-typedef boolean OS_NewTickFlag_t;
+typedef volatile boolean OS_NewTickFlag_t;
 
 /* task will run flag */
 typedef boolean OS_TaskWillRunFlag_t;
@@ -43,6 +43,12 @@ typedef boolean OS_TaskIsRunningFlag_t;
 
 /* OS is initialized flag */
 typedef boolean OS_InitializedFlag_t;
+
+/*  cpu load */
+typedef uint8_t OS_CpuLoad_t;
+
+/* idle task duration */
+typedef OS_SysTicks_t OS_IdleTaskDuration_t;
 
  /*- Constants
  -------------------------------*/
@@ -93,7 +99,8 @@ Std_ReturnType OS_Init(void);
 Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTime);
 /* check if any task is currently running */
 boolean OS_checkIfTaskRunning(void);
-
+/* get cpu load */
+Std_ReturnType OS_getCpuLoad(OS_CpuLoad_t* CpuLoad);
 /*- Extern Variables
 -------------------------------*/
 

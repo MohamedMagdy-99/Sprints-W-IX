@@ -40,8 +40,21 @@ TaskState_t TasksCurrentState[MAX_NUM_TASKS];
 
 /* currently running taks index */
 TaskIndex_t CurrentlyRunningTaskIndex = Initial_Value;
+
 /* OS is initialized flag */
 OS_InitializedFlag_t OS_InitializedFlag = FALSE;
+
+/* current cpu load */
+OS_CpuLoad_t CurrentCpuLoad;
+
+/* cpu load repetition cycles */
+OS_CpuLoad_t CpuLoadCycle = Initial_Value;
+
+/* array to store cpu loads to get average later */
+OS_CpuLoad_t CpuLoadBuffer[CPU_LOAD_CALC_CYCLES];
+
+/* OS idle task duration */
+OS_IdleTaskDuration_t OS_IdleTaskDuration;
 
 /*- STATIC FUNCTION DECLARATIONS
 --------------------------------*/
@@ -55,6 +68,12 @@ STATIC Std_ReturnType OS_setTaskState(TaskId_t Id, TaskState_t TaskState);
 STATIC void OS_CallBack(void);
 /* get task's index in array using id */
 STATIC Std_ReturnType OS_GetTaskIndex_Id(TaskId_t Id, TaskIndex_t* TaskIndex);
+/* calcualtes cpu load average */
+STATIC Std_ReturnType OS_CalcCpuLoadAvg(void);
+/* cpu load handler */
+STATIC Std_ReturnType OS_CpuLoadHandler(void);
+/* OS idle task */
+STATIC Std_ReturnType OS_IdleTask(void);
 
 /*- LOCAL FUNCTIONS IMPLEMENTATION
 ------------------------*/
@@ -92,6 +111,9 @@ Std_ReturnType OS_Init(void)
 		{
 			TasksCurrentState[u8_loopCounter] = SUSPENDED;
 		}
+		
+		/* activate global interrupts */
+		EnableGlobalInterrupts();
 
 		/* start timer for first time */
 		GptStart_aSync(TIMER_CHANNEL_0_ID, OS_BASE_SYSTICKS_TIMERTICKS, OS_CallBack);	
@@ -112,11 +134,14 @@ Std_ReturnType OS_Init(void)
 ******************************************************************************************/
 STATIC Std_ReturnType OS_Scheduler(void)
 {
-
 	while(TRUE)
 	{
+
 		if(OS_NewTickFlag == TRUE)
 		{
+			/* check for cpu load and handle its calculation */
+			OS_CpuLoadHandler();
+			
 			/* if a task is already running now, leave the if condition */
 			if(OS_TaskIsRunningFlag == TRUE)
 			{
@@ -153,7 +178,7 @@ STATIC Std_ReturnType OS_Scheduler(void)
 					/* run the winner task */
 					Tasks[CurrentlyRunningTaskIndex].TaskPointer(Tasks[CurrentlyRunningTaskIndex].Parameters);
 					/* block the task that finished task */
-					OS_setTaskState(TasksCurrentState[CurrentlyRunningTaskIndex], BLOCKED);
+					OS_setTaskState(Tasks_Ids[CurrentlyRunningTaskIndex], BLOCKED);
 					/* reset tick flag */
 					OS_NewTickFlag = FALSE;		
 					/* reset task is running flag */
@@ -165,8 +190,7 @@ STATIC Std_ReturnType OS_Scheduler(void)
 					OS_NewTickFlag = FALSE;
 					
 					/* no task needs to run in this ticks, system is idle */
-										
-
+					OS_IdleTask();
 				}		
 			}
 
@@ -276,6 +300,33 @@ Std_ReturnType OS_TaskSuspend(TaskId_t Id)
 		OS_GetTaskIndex_Id(Id, &TaskIndex);
 		/* change the state */
 		TasksCurrentState[TaskIndex] = SUSPENDED;	
+	return E_OK;
+}
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: calculate CPU load
+******************************************************************************************/
+STATIC Std_ReturnType OS_calculateCpuLoad(OS_CpuLoad_t* tempCpuLoad)
+{
+	*tempCpuLoad =  100 - ((OS_IdleTaskDuration*100)/CPU_LOAD_FRAME); 
+	return E_OK;
+}
+
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: task to be executed when system is idle (no other tasks executing)
+******************************************************************************************/
+STATIC Std_ReturnType OS_IdleTask(void)
+{
+
+	OS_IdleTaskDuration++;
+
 	return E_OK;
 }
 
@@ -420,3 +471,69 @@ Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTick)
 	*Sys_CurrentTick = Sys_CurrentTime;
 	return E_OK;
 }
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: calculates cpu load average
+******************************************************************************************/
+STATIC Std_ReturnType OS_CalcCpuLoadAvg(void)
+{
+	/* take the average of all calculated cpu loads */
+	uint8_t u8_loopCounter = Initial_Value;
+	OS_CpuLoad_t tempCurrentCpuLoad = Initial_Value;
+	for(u8_loopCounter = Initial_Value; u8_loopCounter < CPU_LOAD_CALC_CYCLES; u8_loopCounter++)
+	{
+		tempCurrentCpuLoad += CpuLoadBuffer[u8_loopCounter];
+	}
+	CurrentCpuLoad = (tempCurrentCpuLoad / CPU_LOAD_CALC_CYCLES);
+	return E_OK;
+}
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: cpu load handling
+******************************************************************************************/
+STATIC Std_ReturnType OS_CpuLoadHandler(void)
+{
+	if((Sys_CurrentTime % (CPU_LOAD_FRAME)) == 0 && Sys_CurrentTime != 0)
+	{
+		/* calculate cpu load according to idle task duration within the past CPU_LOAD_FRAME */
+		OS_CpuLoad_t tempCpuLoad;
+		OS_calculateCpuLoad(&tempCpuLoad);
+		/* save the load */
+		CpuLoadBuffer[CpuLoadCycle] = tempCpuLoad;
+		/* increment CPU_LOAD_CALC_CYCLES monitor variable */
+		CpuLoadCycle++;
+		/* reset idle task duration */
+		OS_IdleTaskDuration = Initial_Value;
+		/* check if we calculated CPU load CPU_LOAD_CALC_CYCLES times already */
+		if(CpuLoadCycle == CPU_LOAD_CALC_CYCLES)
+		{
+			/* calculate cpu load average and store in current cpu load*/
+			OS_CalcCpuLoadAvg();
+			
+			/* reset the cpu load cycle */
+			CpuLoadCycle = Initial_Value;
+		}
+	}
+	return E_OK;
+}
+
+/*****************************************************************************************
+* Parameters (in): None
+* Parameters (out): Error Status
+* Return value: Std_ReturnType
+* Description: fun to get current CPU load
+******************************************************************************************/
+Std_ReturnType OS_getCpuLoad(OS_CpuLoad_t* CpuLoad)
+{
+	*CpuLoad = CurrentCpuLoad;
+	return E_OK;
+}
+
+
+
