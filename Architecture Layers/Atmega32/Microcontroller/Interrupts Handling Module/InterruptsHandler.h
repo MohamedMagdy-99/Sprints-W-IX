@@ -10,8 +10,8 @@
 #ifndef INTH_H_
 #define INTH_H_
 
-#include "../Std_Types.h"
-#include "../../Libraries/Common_Macros.h"
+#include "Std_Types.h"
+#include "Common_Macros.h"
 
 /*- Primitive Types
 -------------------------------*/

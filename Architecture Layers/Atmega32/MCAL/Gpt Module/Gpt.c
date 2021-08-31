@@ -822,7 +822,7 @@ enuGpt_Status_t GptStart_aSync(uint8_t ChannelId, uint32_t u32_Ticks, pfGpt_Call
 				f32_TempValue -= gu32_T0_OvfCounts;
 				uint32_t u32_CountRemanider = f32_TempValue * TIMER_0_MAX_TICKS;
 						
-				TCNT0_R = u32_CountRemanider;
+				TCNT0_R = TIMER_0_MAX_TICKS - u32_CountRemanider;
 						
 				/* set to prescaler */
 				switch(strGpt_Channels[ChannelId].u8_Prescaler)
@@ -988,7 +988,7 @@ enuGpt_Status_t GptStart_aSync(uint8_t ChannelId, uint32_t u32_Ticks, pfGpt_Call
 					f32_TempValue -= gu32_T2_OvfCounts;
 					uint32_t u32_CountRemanider = f32_TempValue * TIMER_2_MAX_TICKS;
 					
-					TCNT2_R = u32_CountRemanider;
+					TCNT2_R = TIMER_2_MAX_TICKS - u32_CountRemanider;
 					
 					/* set to prescaler */
 					switch(strGpt_Channels[ChannelId].u8_Prescaler)
@@ -1161,7 +1161,7 @@ enuGpt_Status_t GptStart_aSync(uint8_t ChannelId, uint32_t u32_Ticks, pfGpt_Call
 			f32_TempValue -= gu32_T1_OvfCounts;
 			uint32_t u32_CountRemanider = f32_TempValue * TIMER_1_MAX_TICKS;
 			
-			TCNT1_R = u32_CountRemanider;
+			TCNT1_R = TIMER_1_MAX_TICKS - u32_CountRemanider;
 			
 			/* set to prescaler */
 			switch(strGpt_Channels[ChannelId].u8_Prescaler)
@@ -1248,21 +1248,21 @@ enuGpt_Status_t GptStop(uint8_t ChannelId)
 			break;
 		}
 
-case(TIMER_1):
-{
-	
-	CLEAR_BIT(TCCR1B_R, CS10_B);
-	CLEAR_BIT(TCCR1B_R, CS11_B);
-	CLEAR_BIT(TCCR1B_R, CS12_B);
-	TCNT1_R = 0x0000;
-	CLEAR_BIT(TIMSK_R, TOIE1_B);
-	
-	Gpt_Status[TIMER_1] = GPT_STATUS_NOT_RUNNING;
-	
-	break;
-}
-
+		case(TIMER_1):
+		{
+			
+			CLEAR_BIT(TCCR1B_R, CS10_B);
+			CLEAR_BIT(TCCR1B_R, CS11_B);
+			CLEAR_BIT(TCCR1B_R, CS12_B);
+			TCNT1_R = 0x0000;
+			CLEAR_BIT(TIMSK_R, TOIE1_B);
+			
+			Gpt_Status[TIMER_1] = GPT_STATUS_NOT_RUNNING;
+			
+			break;
+		}
 		
+				
 		case(TIMER_2):
 		{
 			CLEAR_BIT(TCCR2_R, CS20_B);

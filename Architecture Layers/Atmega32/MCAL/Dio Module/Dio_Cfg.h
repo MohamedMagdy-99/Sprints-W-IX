@@ -13,7 +13,7 @@
 
 /* user set the number of pins used in the project */
 
-#define DIO_USED_PINS_NUM   4
+#define DIO_USED_PINS_NUM   2
 
 
 /* CONSTANTS */
@@ -37,10 +37,7 @@
 #define PIN_PUR		2U /* Pull Up Resistor */
 #define PIN_NO_PUR  3U /* No Pull Up Resistor */
 
-#define PORTD_PIN2_ID	0
-#define PORTA_PIN0_ID	1
-
-#define PORTA_PIN6_ID	2
-#define PORTC_PIN3_ID	3
+#define PORTA_PIN6_ID	0
+#define PORTC_PIN3_ID	1
 
 #endif /* DIO_CFG_H_ */

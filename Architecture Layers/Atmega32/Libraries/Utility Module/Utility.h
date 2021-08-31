@@ -9,7 +9,7 @@
 #ifndef UTILITY_H_
 #define UTILITY_H_
 
-#include "../../Microcontroller/Std_Types.h"
+#include "Std_Types.h"
 
 #define DEC		0
 #define HEX		1	
@@ -43,5 +43,7 @@ uint8_t Max_String_Num(uint8_t* string1, uint8_t* string2);
 void EmptyString(uint8_t *string);
 void stringHexToNum(uint8_t *pu8_String, uint16_t *pu16_Num);
 
+uint8_t ReturnIndexOfLargestElement(uint8_t* arr, uint8_t numOfElements);
+uint8_t ReturnIndexOfSmallestElement(uint8_t* arr, uint8_t numOfElements);
 
 #endif /* UTILITY_H_ */

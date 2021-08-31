@@ -13,7 +13,7 @@
 #ifndef PLATFORM_TYPES_H
 #define PLATFORM_TYPES_H
 
-#include "../Libraries/Compiler.h"
+#include "Compiler.h"
 /*
  * CPU register type width
  */
