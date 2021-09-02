@@ -102,8 +102,11 @@ Std_ReturnType OS_Init(void);
 Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTime);
 /* check if any task is currently running */
 boolean OS_checkIfTaskRunning(void);
+
+#if 0
 /* get cpu load */
 Std_ReturnType OS_getCpuLoad(OS_CpuLoad_t* CpuLoad);
+#endif
 /*- Extern Variables
 -------------------------------*/
 
