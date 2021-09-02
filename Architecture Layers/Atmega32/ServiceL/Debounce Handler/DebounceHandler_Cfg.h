@@ -17,11 +17,11 @@
 /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 /*-*-*-*-*- CONSTANTS -*-*-*-*-*-*/
 
-/* user set the number of pins used in the project */
+/* user set the number of devices used in the project */
 
 #define DEBOUNCE_DEVICES_USED			(2U)
 
-/* button Id according to cfg struct array order to be used in function calls */
+/* device Id according to cfg struct array order to be used in function calls */
 #define DEB_DEVICE_1_ID				    (0U)
 #define DEB_DEVICE_2_ID				    (1U)
 

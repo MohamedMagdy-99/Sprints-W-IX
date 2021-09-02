@@ -10,7 +10,7 @@
 #include "Uart.h"
 /*- BLOBAL STATIC VARIABLES
 -------------------------------*/
-static pfUart_CallBack_t UartRxCallback;
+//static pfUart_CallBack_t UartRxCallback;
 /*- GLOBAL EXTERN VARIABLES
 -------------------------------*/
 enuUart_Status_t Uart_Status = UART_STATUS_ERROR_OK;
@@ -241,21 +241,30 @@ enuUart_Status_t Uart_syncReceive_string_vTerminal(uint8_t* u8_RxString)
 
 
 /*****************************************************************************************
+* Parameters (in): pointer to data to be stored from uart buffer
+* Parameters (out): Error Status
+* Return value: enuUart_Status_t
+* Description: uart receives data using interrupts using BCM module
+******************************************************************************************/
+Std_ReturnType UartRead_BCM(uint8_t uartChannel, uint8_t* bufferValue)
+{
+	*bufferValue = UDR_R;
+	return E_OK;
+}
+
+/*****************************************************************************************
 * Parameters (in): pointer to callback function
 * Parameters (out): Error Status
 * Return value: enuUart_Status_t
-* Description: uart receives data using interrupts
+* Description: enable uart receive using interrupts
 ******************************************************************************************/
-enuUart_Status_t Uart_asyncReceive(pfUart_CallBack_t FunToBeCalledInISR)
+Std_ReturnType Uart_EnableNotification_BCM(uint8_t uartChannel)
 {
-	EnableGlobalInterrupts();
-	setUartRxCallback(FunToBeCalledInISR);
-	
 	/* enable receiving interrupt */
-	SET_BIT(UCSRB_R, RXCIE_B);	
-	return UART_STATUS_ERROR_OK;
+	SET_BIT(UCSRB_R, RXCIE_B);
+	
+	return E_OK;
 }
-
 
 /*****************************************************************************************
 * Parameters (in): None
@@ -263,14 +272,15 @@ enuUart_Status_t Uart_asyncReceive(pfUart_CallBack_t FunToBeCalledInISR)
 * Return value: enuUart_Status_t
 * Description: stops uart receive interrupt
 ******************************************************************************************/
-enuUart_Status_t Uart_asyncReceive_Stop()
+Std_ReturnType Uart_DisableNotification_BCM(uint8_t uartChannel)
 {
 	/* disable receiving interrupt */
 	CLEAR_BIT(UCSRB_R, RXCIE_B);
 	
-	return UART_STATUS_ERROR_OK;
+	return E_OK;
 	
 }
+
 /* Interrupts */
 
 /*****************************************************************************************
@@ -279,11 +289,11 @@ enuUart_Status_t Uart_asyncReceive_Stop()
 * Return value: None
 * Description: sets the function to be called by overflow timer ISR
 ******************************************************************************************/
-void setUartRxCallback(pfUart_CallBack_t FunToBeCalledInISR)
-{
-	UartRxCallback = FunToBeCalledInISR;
-	
-}
+// void setUartRxCallback(pfUart_CallBack_t FunToBeCalledInISR)
+// {
+// 	UartRxCallback = FunToBeCalledInISR;
+// 	
+// }
 
 /*****************************************************************************************
 * Parameters (in): None
@@ -291,9 +301,9 @@ void setUartRxCallback(pfUart_CallBack_t FunToBeCalledInISR)
 * Return value: None
 * Description: interrupt service routine for uart RX
 ******************************************************************************************/
-ISR(USART_RXC)
-{
-
-	UartRxCallback();
-	
-}
+// ISR(USART_RXC)
+// {
+//
+// 	UartRxCallback();
+//
+//}
