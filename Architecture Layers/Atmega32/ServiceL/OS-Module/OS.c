@@ -38,6 +38,7 @@ OS_TaskIndex_t CurrentlyRunningTaskIndex = Initial_Value;
 /* OS is initialized flag */
 OS_InitializedFlag_t OS_InitializedFlag = FALSE;
 
+#if 0
 /* current cpu load */
 OS_CpuLoad_t CurrentCpuLoad;
 
@@ -49,7 +50,7 @@ OS_CpuLoad_t CpuLoadBuffer[CPU_LOAD_CALC_CYCLES];
 
 /* OS idle task duration */
 OS_IdleTaskDuration_t OS_IdleTaskDuration;
-
+#endif
 /* counter for priority handler for loop */
 OS_CreatedTasksCount_t tasksPrioLoopCounter = Initial_Value;
 
@@ -65,10 +66,12 @@ STATIC Std_ReturnType OS_setTaskState(OS_TaskId_t Id, TaskState_t TaskState);
 STATIC void OS_CallBack(void);
 /* get task's index in array using id */
 STATIC Std_ReturnType OS_GetTaskIndex_Id(OS_TaskId_t Id, OS_TaskIndex_t* TaskIndex);
+#if 0
 /* calcualtes cpu load average */
 STATIC Std_ReturnType OS_CalcCpuLoadAvg(void);
 /* cpu load handler */
 STATIC Std_ReturnType OS_CpuLoadHandler(void);
+#endif
 /* OS idle task */
 STATIC Std_ReturnType OS_IdleTask(void);
 /* priority race handler */
@@ -137,47 +140,24 @@ STATIC Std_ReturnType OS_Scheduler(void)
 	
 	while(TRUE)
 	{
-
-		if(OS_NewTickFlag == TRUE)
+		OS_TaskWillRunFlag = OS_checkIfTaskReady();
+		while(OS_TaskWillRunFlag == TRUE)
 		{
-			/* check for cpu load and handle its calculation */
-			OS_CpuLoadHandler();
-			
-			/* if a task is already running now, leave the if condition */
-			if(OS_TaskIsRunningFlag == TRUE)
-			{
-				/* a task is already running we have to wait */
-				/* reset tick flag */
-				OS_NewTickFlag = FALSE;
-			}
-			else
-			{
-				OS_TaskWillRunFlag = OS_checkIfTaskReady();
-				/* if any task is ready to run */
-				if(OS_TaskWillRunFlag == TRUE)
-				{
-					/* compare the priority of ready tasks */
-					OS_TasksPriorityRaceHandler();
-					/* run the winning task */
-					OS_RunWinningPriorityTask();
-					/* block the task that finished task */
-					OS_setTaskState(Tasks[CurrentlyRunningTaskIndex].Id, BLOCKED);
-					/* reset tick flag */
-					OS_NewTickFlag = FALSE;		
-					/* reset task is running flag */
-					OS_TaskIsRunningFlag = FALSE;			
-				}
-				else
-				{
-					/* reset tick flag */
-					OS_NewTickFlag = FALSE;
-					
-					/* no task needs to run in this tick, system is idle */
-					OS_IdleTask();
-				}		
-			}
-
+			/* compare the priority of ready tasks */
+			OS_TasksPriorityRaceHandler();
+			/* run the winning task */
+			OS_RunWinningPriorityTask();
+			/* block the task that finished task */
+			OS_setTaskState(Tasks[CurrentlyRunningTaskIndex].Id, BLOCKED);
+			/* check again if any task need to run */
+			OS_TaskWillRunFlag = OS_checkIfTaskReady();
 		}
+		/* reset task is running flag */
+		OS_TaskIsRunningFlag = FALSE;
+		/* reset tick flag */
+		OS_NewTickFlag = FALSE;		
+		/* no tasks need to run, so idle task will run till the new tick comes */
+		OS_IdleTask();	
 	}
 	return E_OK;
 }
@@ -287,6 +267,7 @@ Std_ReturnType OS_TaskSuspend(OS_TaskId_t Id)
 	return E_OK;
 }
 
+#if 0
 /*****************************************************************************************
 * Parameters (in): None
 * Parameters (out): Error Status
@@ -298,7 +279,7 @@ STATIC Std_ReturnType OS_calculateCpuLoad(OS_CpuLoad_t* tempCpuLoad)
 	*tempCpuLoad =  100 - ((OS_IdleTaskDuration*100)/CPU_LOAD_FRAME); 
 	return E_OK;
 }
-
+#endif
 
 /*****************************************************************************************
 * Parameters (in): None
@@ -308,12 +289,16 @@ STATIC Std_ReturnType OS_calculateCpuLoad(OS_CpuLoad_t* tempCpuLoad)
 ******************************************************************************************/
 STATIC Std_ReturnType OS_IdleTask(void)
 {
-
-	OS_IdleTaskDuration++;
+	#if 0
+	/* for CPU load calc. */
+	OS_IdleTaskDuration++; 
+	#endif
+	
+	LPM_EnterLowPowerMode(CPU_SLEEP_MODE);
 	
 	while(OS_NewTickFlag == FALSE)
 	{
-		LPM_EnterLowPowerMode(CPU_SLEEP_MODE);
+		
 	}
 	
 	return E_OK;
@@ -459,6 +444,7 @@ Std_ReturnType OS_getCurrentSysTick(OS_SysTicks_t* Sys_CurrentTick)
 	return E_OK;
 }
 
+#if 0
 /*****************************************************************************************
 * Parameters (in): None
 * Parameters (out): Error Status
@@ -477,7 +463,9 @@ STATIC Std_ReturnType OS_CalcCpuLoadAvg(void)
 	CurrentCpuLoad = (tempCurrentCpuLoad / CPU_LOAD_CALC_CYCLES);
 	return E_OK;
 }
+#endif
 
+#if 0
 /*****************************************************************************************
 * Parameters (in): None
 * Parameters (out): Error Status
@@ -509,7 +497,9 @@ STATIC Std_ReturnType OS_CpuLoadHandler(void)
 	}
 	return E_OK;
 }
+#endif
 
+#if 0
 /*****************************************************************************************
 * Parameters (in): None
 * Parameters (out): Error Status
@@ -521,6 +511,7 @@ Std_ReturnType OS_getCpuLoad(OS_CpuLoad_t* CpuLoad)
 	*CpuLoad = CurrentCpuLoad;
 	return E_OK;
 }
+#endif
 
 /*****************************************************************************************
 * Parameters (in): None
