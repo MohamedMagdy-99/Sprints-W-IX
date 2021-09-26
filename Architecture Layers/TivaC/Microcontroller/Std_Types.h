@@ -18,7 +18,7 @@
 /*
  *  Describes the standard Return Type Definitions used in the project
  */
-typedef uint8_t  Std_ReturnType;
+typedef uint8  Std_ReturnType;
 
 
 
@@ -34,5 +34,5 @@ typedef uint8_t  Std_ReturnType;
 #define E_OK            ((Std_ReturnType)0x00U)      /* Function Return OK */
 #define E_NOT_OK        ((Std_ReturnType)0x01U)      /* Function Return NOT OK */
 
-#define Initial_Value	0x00U
+#define INITIAL_VALUE	(0x00U)
 #endif /* STD_TYPES_H */
