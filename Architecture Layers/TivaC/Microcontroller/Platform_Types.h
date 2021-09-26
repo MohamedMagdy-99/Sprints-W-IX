@@ -34,9 +34,9 @@
 #define LOW_BYTE_FIRST              (1u)        /* Little endian byte ordering    */
 
 /*
- * Platform type and endianess definitions, specific for AVR
+ * Platform type and endianess definitions, specific for ARM
  */
-#define CPU_TYPE            CPU_TYPE_8
+#define CPU_TYPE            CPU_TYPE_32
 
 #define CPU_BIT_ORDER       LSB_FIRST
 #define CPU_BYTE_ORDER      LOW_BYTE_FIRST
@@ -53,15 +53,15 @@
 
 typedef unsigned char         boolean;
 
-typedef unsigned char         uint8_t;          /*           0 .. 255             */
-typedef signed char           sint8_t;          /*        -128 .. +127            */
-typedef unsigned short        uint16_t;         /*           0 .. 65535           */
-typedef signed short          sint16_t;         /*      -32768 .. +32767          */
-typedef unsigned long         uint32_t;         /*           0 .. 4294967295      */
-typedef signed long           sint32_t;         /* -2147483648 .. +2147483647     */
-typedef unsigned long long    uint64_t;         /*       0..18446744073709551615  */
-typedef signed long long      sint64_t;
-typedef float                 float32_t;
-typedef double                float64_t;
+typedef unsigned char         uint8;          /*           0 .. 255             */
+typedef signed char           sint8;          /*        -128 .. +127            */
+typedef unsigned short        uint16;         /*           0 .. 65535           */
+typedef signed short          sint16;         /*      -32768 .. +32767          */
+typedef unsigned long         uint32;         /*           0 .. 4294967295      */
+typedef signed long           sint32;         /* -2147483648 .. +2147483647     */
+typedef unsigned long long    uint64;         /*       0..18446744073709551615  */
+typedef signed long long      sint64;
+typedef float                 float32;
+typedef double                float64;
 
 #endif /* PLATFORM_TYPES_H */
