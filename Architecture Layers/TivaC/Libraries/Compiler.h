@@ -33,4 +33,11 @@
 /* This is used to define the abstraction of compiler keyword static */
 #define STATIC            static
 
+
+/* Enable Global Interrupts. */
+#define Enable_GlobalInterrupts()    __asm("CPSIE I")
+
+/* Disable Global Interrupts. */
+#define Disable_GlobalInterrupts()   __asm("CPSID I")
+
 #endif
