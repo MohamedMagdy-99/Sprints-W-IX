@@ -16,22 +16,12 @@
 /**********************************************************************************************************************
 *  LOCAL MACROS CONSTANT\FUNCTION
 *********************************************************************************************************************/	
-#define VECTKEY_Pos              (16U)                                           /*!< SCB AIRCR: VECTKEY Position */
-#define VECTKEY_Msk              (0xFFFFUL << VECTKEY_Pos)                       /*!< SCB AIRCR: VECTKEY Mask */
- 
-#define PRIGROUP_Pos             (8U)                                            /*!< SCB AIRCR: PRIGROUP Position */
-#define PRIGROUP_Msk             (7UL << PRIGROUP_Pos)                           /*!< SCB AIRCR: PRIGROUP Mask */
-
-#define IRQn_MIN                 (0u)
-#define IRQn_MAX                 (138u)
-/**********************************************************************************************************************
- *  LOCAL DATA 
- *********************************************************************************************************************/
-
+#define IRQn_MIN                 (0)
+#define IRQn_MAX                 (138)
 /**********************************************************************************************************************
  *  GLOBAL DATA
  *********************************************************************************************************************/
-
+IntCtrl_InitStatus_t IntCtrl_InitStatus = INTCTRL_NOT_INITIALIZED;
 /**********************************************************************************************************************
  *  LOCAL FUNCTION PROTOTYPES
  *********************************************************************************************************************/
@@ -51,6 +41,10 @@ STATIC Std_ReturnType IntCtrl_SetPrioritySystem(IntCtr_GrpPrioSys_t PrioSystem);
 ***********************************************************************************************/
 Std_ReturnType IntCtrl_EnableIRQ(IRQn_Type IRQ_Number)
 {
+  if(IntCtrl_InitStatus == INTCTRL_NOT_INITIALIZED)
+  {
+      return E_OK;
+  }
 
   if(IRQ_Number == ALL_MCU_INTERRUPTS)
   {
@@ -82,7 +76,10 @@ Std_ReturnType IntCtrl_EnableIRQ(IRQn_Type IRQ_Number)
 ***********************************************************************************************/
 Std_ReturnType IntCtrl_DisableIRQ(IRQn_Type IRQ_Number)
 {
-
+  if(IntCtrl_InitStatus == INTCTRL_NOT_INITIALIZED)
+  {
+      return E_OK;
+  }
   if(IRQ_Number == ALL_MCU_INTERRUPTS)
   {
     uint8 u8_loopCounter = INITIAL_VALUE;
@@ -144,7 +141,7 @@ STATIC Std_ReturnType IntCtrl_SetPriority(IRQn_Type IRQ_Number, IntCtr_GrpPrio_t
 
    if ((sint32)(IRQ_Number) >= IRQn_MIN && (sint32)(IRQ_Number) <= IRQn_MAX)
    {
-     NVIC->IP[IRQ_Number] = (uint8)((Priority << 3U) & (uint32)0xFFUL);
+     NVIC->IP[IRQ_Number] = (uint8)((Priority << 5U) & (uint32)0xFFUL);
    }
    else
    {
@@ -171,11 +168,11 @@ STATIC Std_ReturnType IntCtrl_SetPrioritySystem(IntCtr_GrpPrioSys_t PrioSystem)
 
     u32_regValue  =  SCB->AIRCR;                                                   /* read old register configuration    */
 
-    u32_regValue &= ~((uint32)(VECTKEY_Msk | PRIGROUP_Msk));                       /* clear bits to change               */
+    u32_regValue &= ~((uint32)(SCB_AIRCR_VECTKEY_Msk | SCB_AIRCR_PRIGROUP_Msk));   /* clear bits to change               */
     
-    u32_regValue  =  (u32_regValue                         |
-                     ((uint32)0x5FAUL << VECTKEY_Pos)      |
-                     (PriorityGroupTmp << PRIGROUP_Pos)     );                     /* Insert write key and priorty group */
+    u32_regValue  =  (u32_regValue                                   |
+                     ((uint32)0x5FAUL << SCB_AIRCR_VECTKEY_Pos)      |
+                     (PriorityGroupTmp << SCB_AIRCR_PRIGROUP_Pos)     );            /* Insert write key and priorty group */
 
     SCB->AIRCR =  u32_regValue;
     return E_OK;  
@@ -198,6 +195,10 @@ STATIC Std_ReturnType IntCtrl_SetPrioritySystem(IntCtr_GrpPrioSys_t PrioSystem)
 *******************************************************************************/
 Std_ReturnType IntCtrl_Init(void)
 {
+    if(IntCtrl_InitStatus == INTCTRL_INITIALIZED)
+    {
+        return E_OK;
+    }
     uint8 u8_loopCounter = INITIAL_VALUE;
 	/*Configure Grouping\SubGrouping System in APINT register in SCB*/
     IntCtrl_SetPrioritySystem(PRIORITY_SYSTEM);
@@ -215,7 +216,8 @@ Std_ReturnType IntCtrl_Init(void)
       IntCtrl_EnableIRQ(IntCtrl_Config[u8_loopCounter].IRQ_Number);  
     }
 
-	
+	  IntCtrl_InitStatus = INTCTRL_INITIALIZED;
+
     return E_OK;
 }
 
