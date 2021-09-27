@@ -33,11 +33,27 @@
 /* This is used to define the abstraction of compiler keyword static */
 #define STATIC            static
 
+/* Switch to unprivileged mode */
+#define Switch_CPU_Unprivileged() \
+   __asm("MRS R0, CONTROL");\
+   __asm("ORR R0, R0, #0x01");\
+   __asm("MSR CONTROL, R0")
+
+/* Switch to privileged mode */
+#define Switch_CPU_Privileged() \
+   __asm("MRS R0, CONTROL");\
+   __asm("AND R0, R0, #0xFE");\
+   __asm("MSR CONTROL, R0")
+
+/* Pend SVC Interrupt */
+#define SVCall_Pend()                __asm("SVC #0x00")
 
 /* Enable Global Interrupts. */
 #define Enable_GlobalInterrupts()    __asm("CPSIE I")
 
 /* Disable Global Interrupts. */
 #define Disable_GlobalInterrupts()   __asm("CPSID I")
+
+
 
 #endif
