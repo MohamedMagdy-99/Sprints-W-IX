@@ -34,7 +34,7 @@
 #define STATIC            static
 
 /* Switch to unprivileged mode */
-#define Switch_CPU_Unprivileged() \
+#define Switch_CPU_Unprivileged()\
    __asm("MRS R0, CONTROL");\
    __asm("ORR R0, R0, #0x01");\
    __asm("MSR CONTROL, R0")
@@ -49,11 +49,14 @@
 #define SVCall_Pend()                __asm("SVC #0x00")
 
 /* Enable Global Interrupts. */
-#define Enable_GlobalInterrupts()    __asm("CPSIE I")
-
+#define Enable_GlobalInterrupts()\
+     __asm("CPSIE I");\
+     __asm("CPSIE F")
+     
 /* Disable Global Interrupts. */
-#define Disable_GlobalInterrupts()   __asm("CPSID I")
-
+#define Disable_GlobalInterrupts()\
+         __asm("CPSID I");\
+         __asm("CPSID F")
 
 
 #endif
