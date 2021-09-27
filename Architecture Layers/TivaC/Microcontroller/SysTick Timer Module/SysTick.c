@@ -48,12 +48,12 @@ Std_ReturnType SysTick_Init(void)
     {
         case(SYSTICK_PIOSC_DIV4):
         {
-            CLEAR_BIT(SysTick->CTRL, 2);
+            CLEAR_BIT(SysTick->CTRL, SysTick_CTRL_CLKSOURCE_Pos);
             break;
         }
         case(SYSTIC_SYS_CLK):
         {
-            SET_BIT(SysTick->CTRL, 2);
+            SET_BIT(SysTick->CTRL, SysTick_CTRL_CLKSOURCE_Pos);
             break;
         }        
         default:
@@ -85,13 +85,13 @@ Std_ReturnType SysTick_SyncStart(SysTick_Ticks_t Ticks)
         return E_OK;
     }
 
-    SysTick->LOAD = Ticks;                            /* Delay Reload Value                                       */
-	SysTick->VAL  = INITIAL_VALUE;                    /* Initialize Counter Current Value to 0                    */
-    SET_BIT(SysTick->CTRL, 0);                        /* Enable SysTick Peripheral                                */
+    SysTick->LOAD = Ticks;                                                    /* Delay Reload Value                                       */
+	SysTick->VAL  = INITIAL_VALUE;                                            /* Initialize Counter Current Value to 0                    */
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Pos);                          /* Enable SysTick Peripheral                                */
 
-    while(BIT_IS_CLEAR(SysTick->CTRL, 16) == 1);      /* Wait Till Timer Underflow is Reached                     */
+    while(BIT_IS_CLEAR(SysTick->CTRL, SysTick_CTRL_COUNTFLAG_Pos) == 1);      /* Wait Till Timer Underflow is Reached                     */
 
-    SysTick->VAL  = INITIAL_VALUE;                    /* Initialize Counter Current Value to 0 To Clear INT Bit   */
+    SysTick->VAL  = INITIAL_VALUE;                                            /* Initialize Counter Current Value to 0 To Clear INT Bit   */
 
     return E_OK;
 }
@@ -119,14 +119,14 @@ Std_ReturnType SysTick_AsyncStart(SysTick_Ticks_t Ticks, SysTick_pfCallBack_t Fu
         return E_OK;
     }
 
-    SysTick_Status = SYSTICK_RUNNING;                   /* Change SysTick State To RUNNING */
-    SysTickCallBack = FunToBeCalledInISR;               /* Set CallBack Function           */
-    Continous_Or_OneShot_Flag = Continous_Or_OneShot;   /* Set Mode Flag to be used in ISR */
+    SysTick_Status = SYSTICK_RUNNING;                                         /* Change SysTick State To RUNNING */
+    SysTickCallBack = FunToBeCalledInISR;                                     /* Set CallBack Function           */
+    Continous_Or_OneShot_Flag = Continous_Or_OneShot;                         /* Set Mode Flag to be used in ISR */
 
-    SysTick->LOAD = Ticks;                              /* Delay Reload Value                      */
-	SysTick->VAL  = INITIAL_VALUE;                      /* Initialize Counter Current Value to 0   */
-    SET_BIT(SysTick->CTRL, 1);                          /* Enable SysTick Interrutp                */ 
-    SET_BIT(SysTick->CTRL, 0);                          /* Enable SysTick Peripheral               */ 
+    SysTick->LOAD = Ticks;                                                    /* Delay Reload Value                      */
+	SysTick->VAL  = INITIAL_VALUE;                                            /* Initialize Counter Current Value to 0   */
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_TICKINT_Pos);                         /* Enable SysTick Interrutp                */ 
+    SET_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Pos);                          /* Enable SysTick Peripheral               */ 
 
     return E_OK; 
 }
@@ -147,9 +147,9 @@ Std_ReturnType SysTick_StopTimer(void)
         return E_OK;
     }
 
-    CLEAR_BIT(SysTick->CTRL, 0);                      /* Disable SysTick Peripheral                  */
-    SysTick->LOAD = INITIAL_VALUE;                    /* Reset  Reload Value                         */
-	SysTick->VAL  = INITIAL_VALUE;                    /* Reset Counter Current Value to 0            */
+    CLEAR_BIT(SysTick->CTRL, SysTick_CTRL_ENABLE_Pos);                     /* Disable SysTick Peripheral                  */
+    SysTick->LOAD = INITIAL_VALUE;                                         /* Reset  Reload Value                         */
+	SysTick->VAL  = INITIAL_VALUE;                                         /* Reset Counter Current Value to 0            */
 
     return E_OK;    
 }
